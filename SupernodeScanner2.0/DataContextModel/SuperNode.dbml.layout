@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="SuperNode">
+  <DataContextMoniker Name="/SuperNodeDataContext" />
+  <nestedChildShapes>
+    <classShape Id="c286b49a-bce0-478b-91c7-afbfe4c33c33" absoluteBounds="2.375, 2.25, 2, 2.1554996744791666">
+      <DataClassMoniker Name="/SuperNodeDataContext/SuperNode" />
+      <nestedChildShapes>
+        <elementListCompartment Id="9d8b6f03-eee0-4581-a2dc-b9842a6da743" absoluteBounds="2.39, 2.71, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>
