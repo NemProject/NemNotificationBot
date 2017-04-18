@@ -109,7 +109,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>User.dbml</DependentUpon>
     </Compile>
-    <Compile Include="KeyBoards.cs" />
+    <Compile Include="Utils\KeyBoards.cs" />
     <Compile Include="Scanners\DBScanners\HarvestedBlockScanner.cs" />
     <Compile Include="Scanners\TaskRunners\AccountTask.cs" />
     <Compile Include="Scanners\TaskRunners\MyDetailsTask.cs" />
