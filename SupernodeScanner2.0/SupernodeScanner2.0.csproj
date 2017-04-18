@@ -110,15 +110,15 @@
       <DependentUpon>User.dbml</DependentUpon>
     </Compile>
     <Compile Include="Utils\KeyBoards.cs" />
-    <Compile Include="Scanners\DBScanners\HarvestedBlockScanner.cs" />
+    <Compile Include="Scanners\Scanners\HarvestedBlockScanner.cs" />
     <Compile Include="Scanners\TaskRunners\AccountTask.cs" />
     <Compile Include="Scanners\TaskRunners\MyDetailsTask.cs" />
     <Compile Include="Scanners\TaskRunners\NodeManagement.cs" />
     <Compile Include="Utils\OptIOAccountUtils.cs" />
     <Compile Include="Scanners\TaskRunners\SummaryCreator.cs" />
-    <Compile Include="Scanners\DBScanners\TransactionScanner.cs" />
+    <Compile Include="Scanners\Scanners\TransactionScanner.cs" />
     <Compile Include="Utils\AccountUtils.cs" />
-    <Compile Include="Scanners\DBScanners\NodeScanner.cs" />
+    <Compile Include="Scanners\Scanners\NodeScanner.cs" />
     <Compile Include="Scanners\TelegramScanners\TelegramScanner.cs" />
     <Compile Include="Utils\NodeUtils.cs" />
     <Compile Include="Utils\SummaryUtils.cs" />

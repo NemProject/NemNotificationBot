@@ -73,7 +73,7 @@ namespace SupernodeScanner2._0.Scanners
         {
             var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
 
-            var reqAction = new SendMessage(a.OwnedByUser, "The account: " + a.EncodedAddress.GetResultsWithHyphen() + " harvested a new block. \n \n" + "http://explorer.ournem.com/#/s_block?height=" + b.height + "\n\nFees included: " + (b.totalFee / 1000000));
+            var reqAction = new SendMessage(a.OwnedByUser, "The account: \n" + a.EncodedAddress.GetResultsWithHyphen() + " harvested a new block. \n" + "http://explorer.ournem.com/#/s_block?height=" + b.height + "\nFees included: " + (b.totalFee / 1000000));
 
             await bot.MakeRequestAsync(reqAction);
         }
