@@ -40,11 +40,12 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                
                    var ips = nodes.Select(n => ("Alias: " + n.Alias +
                     "\nIP: " + n.IP +
-                    "\nDeposit address: \n" + (accounts.All(e => e.EncodedAddress != n.DepositAddress) ? "[ACCOUNT UNREGISTERED] " : "") + n.DepositAddress +
+                    "\nDeposit address: \n" + (accounts.All(e => e.EncodedAddress != n.DepositAddress) ? "[ACCOUNT UNREGISTERED] " : "") + n.DepositAddress.GetResultsWithHyphen() +
                     "\nBalance: " + factory.FromEncodedAddress(n.DepositAddress).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
                     "\nTransactions check: " + AccountUtils.GetAccount(n.DepositAddress, message.Chat.Id).CheckTxs  +
                     "\nHarvesting check: " + AccountUtils.GetAccount(n.DepositAddress, message.Chat.Id).CheckBlocks +
-                    "\nhttps://supernodes.nem.io/details/" + n.SNodeID + "\n\n")).ToList();
+                    "\nhttps://supernodes.nem.io/details/" + n.SNodeID +
+                    "\nhttp://explorer.ournem.com/#/s_account?account=" + n.DepositAddress + "\n\n")).ToList();
 
                 var req = new SendMessage(message.Chat.Id, "**Your registered nodes with associated accounts**");
 
@@ -62,7 +63,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                                 .Select(node => node.EncodedAddress).ToList();
 
                accountString = a.Select(n  => 
-                "\nDeposit address: \n" + n + 
+                "\nDeposit address: \n" + n.GetResultsWithHyphen() + 
                 "\nBalance: " + factory.FromEncodedAddress(n).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
                 "\nTransactions check: " +  AccountUtils.GetAccount(n, message.Chat.Id).CheckTxs +
                 "\nHarvesting check: " +  AccountUtils.GetAccount(n, message.Chat.Id).CheckBlocks +

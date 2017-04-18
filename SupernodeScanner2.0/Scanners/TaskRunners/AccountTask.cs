@@ -42,13 +42,13 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
             // extract any sequence matching addresses
-            var result = address.Matches(message.Text).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
 
             // register any valid addresses for monitoring
             AccountUtils.AddAccount(message.Chat.Id, result);
 
             // notify user the account(s) was registered
-            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses registered: ", (current, n) => current + n + "\n"));
+            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses registered: ", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
             Bot.MakeRequestAsync(reqAction);
         }
 
@@ -75,7 +75,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 .ToList());
 
             // notify user
-            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses unregistered: ", (current, n) => current + n + "\n"));
+            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses unregistered: ", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
             Bot.MakeRequestAsync(reqAction);
         }
     }

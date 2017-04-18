@@ -32,9 +32,18 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                     days = 31;
                     break;
                 default:
-                    days = int.Parse(Regex.Replace(text.Substring(text.LastIndexOf(':') + 1), @"[\s]+", string.Empty));
-                    if (days < 0) return;
-                    break;
+                    try
+                    {
+                        days = int.Parse(Regex.Replace(text.Substring(text.LastIndexOf(':') + 1), @"[\s]+", string.Empty));
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        var reqAction = new SendMessage(chat.Id, "Please insert the number of days for which you want a summary. eg. \"/customSummary: 4\"");
+                        var Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+                        Bot.MakeRequestAsync(reqAction);
+                        return;
+                    }             
             }
 
             var acc = AccountUtils.GetAccountByUser(chat.Id);
@@ -93,7 +102,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 var totalBlocks = hbsummaries.Count(e => address.EncodedAddress == e.MonitoredAccount);
 
                 var reqAction = new SendMessage(chat.Id,
-                    "Summary for account: " + address.EncodedAddress + "\n" +
+                    "Summary for account: \n" + address.EncodedAddress.GetResultsWithHyphen() + "\n" +
                     (nodeAlias != null ? ("Deposit address for node: " + nodeAlias.Alias + "\n") : "") + 
                     "Transactions in: " + txIn + "\n" +
                     "Transactions out: " + txOut + "\n" +
@@ -108,7 +117,8 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                     "Final balance: " + new AccountFactory()
                         .FromEncodedAddress(address.EncodedAddress)
                         .GetAccountInfoAsync()
-                        .Result.Account.Balance / 1000000
+                        .Result.Account.Balance / 1000000 + "\n" +
+                    "http://explorer.ournem.com/#/s_account?account=" + address.EncodedAddress
                 );
                 var Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
                 Bot.MakeRequestAsync(reqAction);

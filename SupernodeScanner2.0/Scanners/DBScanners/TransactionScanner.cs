@@ -83,7 +83,7 @@ namespace SupernodeScanner2._0.Scanners
         {
             var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
 
-            var reqAction = new SendMessage(a.OwnedByUser, "There was a new transaction on account: " + a.EncodedAddress + "\n \n" + "http://explorer.ournem.com/#/s_account?account=" + a.EncodedAddress + "\n\nRecipient: "+ t.transaction.recipient + "\nAmount: " + (t.transaction.amount / 1000000) + " XEM");
+            var reqAction = new SendMessage(a.OwnedByUser, "There was a new transaction on account: " + a.EncodedAddress.GetResultsWithHyphen() + "\n \n" + "http://explorer.ournem.com/#/s_account?account=" + a.EncodedAddress + "\n\nRecipient: "+ t.transaction.recipient.GetResultsWithHyphen() + "\nAmount: " + (t.transaction.amount / 1000000) + " XEM");
 
             await bot.MakeRequestAsync(reqAction);           
         }

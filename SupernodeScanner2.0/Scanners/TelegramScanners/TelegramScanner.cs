@@ -14,6 +14,7 @@ using SupernodeScanner2._0.DataContextModel;
 using SupernodeScanner2._0.DBControllers;
 using SupernodeScanner2._0.Utils;
 using SupernodeScanner2._0.Scanners.TaskRunners;
+using SupernodeScanner2._0;
 
 namespace SuperNodeScanner
 {
@@ -104,11 +105,6 @@ namespace SuperNodeScanner
                     
                     if (text == "/dailySummary" || text == "/sevenDaySummary" || text == "/thirtyOneDaySummary" || text.StartsWith("/customSummary:"))
                     {
-                        // send message to let the user know the bot is working
-                        var reqAction = new SendMessage(update.Message.Chat.Id, "One moment please..");
-
-                        await Bot.MakeRequestAsync(reqAction);
-
                         var t = Task.Run(() => new SummaryCreator().GetSummary(text, update.Message.Chat));
 
                         continue;
@@ -128,26 +124,26 @@ namespace SuperNodeScanner
                         continue;
                     }
 
-                    if (text.StartsWith("/optInTxsAcc:") && text != "optInTxsAcc:")
+                    if (text.StartsWith("/optInTxsAcc:") && text != "/optInTxsAcc:")
                     {
                         OptIOAccountUtils.OptInTx(update.Message);
                        
                         continue;
                     }
-                    if (text.StartsWith("/optOutTxsAcc:") && text != "optOutTxsAcc:")
+                    if (text.StartsWith("/optOutTxsAcc:") && text != "/optOutTxsAcc:")
                     {
                         OptIOAccountUtils.OptOutTx(update.Message);
 
                         continue;
                     }
 
-                    if (text.StartsWith("/optInHarvestingAcc:") && text != "opInHarvestingAcc:")
+                    if (text.StartsWith("/optInHarvestingAcc:") && text != "/opInHarvestingAcc:")
                     {
                         OptIOAccountUtils.OptInHarvesting(update.Message);
 
                         continue;
                     }
-                    if (text.StartsWith("/optOutHarvestingAcc:") && text != "optOutHarvestingAcc:")
+                    if (text.StartsWith("/optOutHarvestingAcc:") && text != "/optOutHarvestingAcc:")
                     {
                         OptIOAccountUtils.OptOutHarvesting(update.Message);
 
@@ -202,18 +198,6 @@ namespace SuperNodeScanner
                             {
                                 UserUtils.AddUser(update.Message.From.Username, update.Message.Chat.Id);
 
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/registerNode:"), new KeyboardButton("/unregisterNode:") },
-                                    new[] { new KeyboardButton("/registerAccount:"), new KeyboardButton("/unregisterAccount:") },
-                                    new[] { new KeyboardButton("/optIO"), new KeyboardButton("/harvestingSpace") },
-                                    new[] { new KeyboardButton("/help") , new KeyboardButton("/myDetails") },
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
                                 var reqAction = new SendMessage(update.Message.Chat.Id,
                                     "Hello. \n\n" +
                                     "Please start by registering a supernode or NEM acccount. \n" +
@@ -228,7 +212,7 @@ namespace SuperNodeScanner
                                     "Check out the \"/optIO\" command for more details. You are automatically opted in for all notifications when you register a node or nem account.\n\n" +
                                     "Use the \"/myDetails\" command to see the nodes and accounts you have registered, what notifications they are signed up for and some additional information. \n\n" 
                                     )
-                                { ReplyMarkup = keyb };
+                                { ReplyMarkup = KeyBoards.MainMenu };
 
                                 Bot.MakeRequestAsync(reqAction);
 
@@ -245,25 +229,23 @@ namespace SuperNodeScanner
 
                                 continue;
                             }
+                        case "/summary":
+                            {
+                                var req = new SendMessage(update.Message.Chat.Id, 
+                                    "Use the commands below to generate a summary for your accounts. " +
+                                    "Include a number after custom summary to get a summary of any given" +
+                                    " days up to the current day")
+                                { ReplyMarkup = KeyBoards.SummaryMenu };
+
+                                Bot.MakeRequestAsync(req);
+
+                                continue;
+                            }
                         case "/help":
                             {
-
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/registerNode:"), new KeyboardButton("/unregisterNode:") },
-                                    new[] { new KeyboardButton("/registerAccount:"), new KeyboardButton("/unregisterAccount:") },
-                                    new[] { new KeyboardButton("/optIO"), new KeyboardButton("/harvestingSpace") },
-                                    new[] { new KeyboardButton("/help") , new KeyboardButton("/myDetails") },
-                                    
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
                                 var req = new SendMessage(update.Message.Chat.Id,
                                     "Hello.\n\n" +
-                                    "You can now chose between registering a supernode or NEM acccount. Check out the commands below on how to do that \n\n" +
+                                    "Check out the commands below to see what you can do, or check out the blog at <link> for more information \n\n" +
                                     "When you register a supernode, the deposit account of the supernode is" +
                                     " automatically registered under your username and you will start to " +
                                     "recieve notifications about failed supernode tests, any transactions " +
@@ -274,7 +256,7 @@ namespace SuperNodeScanner
                                     "You can also in opt out of specific notification types for each node or NEM account you have registered. " +
                                     "Check out the \"/optIO\" command for more details. You are automatically opted in for all notifications when you register a node or nem account.\n\n" +
                                     "Use the \"/myDetails\" command to see the nodes and accounts you have registered, what notifications they are signed up for and some additional information")
-                                { ReplyMarkup = keyb };
+                                { ReplyMarkup = KeyBoards.MainMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -282,19 +264,7 @@ namespace SuperNodeScanner
                             }
                         case "/back":
                             {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/registerNode:"), new KeyboardButton("/unregisterNode:") },
-                                    new[] { new KeyboardButton("/registerAccount:"), new KeyboardButton("/unregisterAccount:") },
-                                    new[] { new KeyboardButton("/optIO"), new KeyboardButton("/harvestingSpace") },
-                                    new[] { new KeyboardButton("/help") , new KeyboardButton("/myDetails") },
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "Main menu") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, "Main menu") { ReplyMarkup = KeyBoards.MainMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -302,24 +272,11 @@ namespace SuperNodeScanner
                             }
                         case "/optIO":
                             {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },                     
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },     
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
                                 var req = new SendMessage(update.Message.Chat.Id,
                                     "Use any of the commands below to opt in or out of any particular notification types. " +
                                     "You can either opt in or out of notification types globally for all accounts registered to you" +
                                     " or selectively per account.")
-                                { ReplyMarkup = keyb };
+                                { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -327,20 +284,10 @@ namespace SuperNodeScanner
                             }
                         case "/optInTxsAcc:":
                         {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "To opt into transaction notifications for a given account or accounts, use the \"/optInTxsAcc:\" command, followed by a list of comma delimeted addresses ") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, 
+                                    "To opt into transaction notifications for a given account or accounts, use the \"/optInTxsAcc:\" command, " +
+                                    "followed by a list of comma delimeted addresses ")
+                                { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -348,41 +295,21 @@ namespace SuperNodeScanner
                         }
                         case "/optOutTxsAcc:":
                             {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "To opt out of transaction notifications for a given account or accounts, use the \"/optOutTxsAcc:\" command, followed by a list of comma delimeted addresses ") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id,
+                                    "To opt out of transaction notifications for a given account or accounts, " +
+                                    "use the \"/optOutTxsAcc:\" command, followed by a list of comma delimeted addresses ")
+                                { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
                                 continue;
                             }
                         case "/optInHarvestingAcc:":
-                            {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "To opt into harvesting notifications for a given account or accounts, use the \"/optInHarvestingAcc:\" command, followed by a list of comma delimeted addresses ") { ReplyMarkup = keyb };
+                            {                                
+                                var req = new SendMessage(update.Message.Chat.Id, 
+                                    "To opt into harvesting notifications for a given account or accounts, " +
+                                    "use the \"/optInHarvestingAcc:\" command, followed by a list of comma delimeted addresses ")
+                                { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -390,20 +317,10 @@ namespace SuperNodeScanner
                             }
                         case "/optOutHarvestingAcc:":
                             {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "To opt out of harvesting notifications for a given account or accounts, use the \"/optOutHarvestingAcc:\" command, followed by a list of comma delimeted addresses ") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, 
+                                    "To opt out of harvesting notifications for a given account or accounts, " +
+                                    "use the \"/optOutHarvestingAcc:\" command, followed by a list of comma delimeted addresses ")
+                                { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -418,22 +335,11 @@ namespace SuperNodeScanner
                                     acc.CheckTxs = true;
                                 }
 
-                                AccountUtils.UpdateAccount(accs);
+                                AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);
 
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "You have opted into transaction notifications") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, 
+                                    "You have opted into transaction notifications")
+                                { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -441,34 +347,24 @@ namespace SuperNodeScanner
                             }
                         case "/optOutTxsGlobal":
                             {
-                                var accs = AccountUtils.GetAccountByUser(update.Message.Chat.Id);
+                                    var accs = AccountUtils.GetAccountByUser(update.Message.Chat.Id);
 
-                                foreach (var acc in accs)
-                                {
-                                    acc.CheckTxs = false;
+                                    foreach (var acc in accs)
+                                    {
+                                        acc.CheckTxs = false;
 
-                                }
+                                    }
 
-                                AccountUtils.UpdateAccount(accs);
+                                    AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);
 
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
+                                    var req = new SendMessage(update.Message.Chat.Id,
+                                        "You have opted out of transaction notifications")
+                                    { ReplyMarkup = KeyBoards.OptMenu };
 
-                                var req = new SendMessage(update.Message.Chat.Id, "You have opted out of transaction notifications") { ReplyMarkup = keyb };
+                                    Bot.MakeRequestAsync(req);
 
-                                Bot.MakeRequestAsync(req);
-
-                                continue;
+                                    continue;
+                                                             
                             }
                         case "/optInHarvestingGlobal":
                             {
@@ -480,22 +376,9 @@ namespace SuperNodeScanner
 
                                 }
 
-                                AccountUtils.UpdateAccount(accs);
+                                AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);      
 
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "You have opted into harvesting notifications") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, "You have opted into harvesting notifications") { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
@@ -511,28 +394,14 @@ namespace SuperNodeScanner
 
                                 }
 
-                                AccountUtils.UpdateAccount(accs);
+                                AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);
 
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                    new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                    new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                    new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                    new[] { new KeyboardButton("/back")}
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
-
-                                var req = new SendMessage(update.Message.Chat.Id, "You have opted out of harvesting notifications") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, "You have opted out of harvesting notifications") { ReplyMarkup = KeyBoards.OptMenu };
 
                                 Bot.MakeRequestAsync(req);
 
                                 continue;
-                            }
-
+                            }        
                         case "/harvestingSpace":
                             {
                                 var reqAction = new SendMessage(update.Message.Chat.Id, "One moment please..");
@@ -571,19 +440,9 @@ namespace SuperNodeScanner
                             }
                         default:
                         {
-                                var keyb = new ReplyKeyboardMarkup()
-                                {
-                                    Keyboard = new[] {
-                                    new[] { new KeyboardButton("/registerNode:"), new KeyboardButton("/unregisterNode:") },
-                                    new[] { new KeyboardButton("/registerAccount:"), new KeyboardButton("/unregisterAccount:") },
-                                    new[] { new KeyboardButton("/optIO"), new KeyboardButton("/harvestingSpace") },
-                                    new[] { new KeyboardButton("/help") , new KeyboardButton("/myDetails") },
-                                },
-                                    OneTimeKeyboard = true,
-                                    ResizeKeyboard = true
-                                };
+                                
 
-                                var req = new SendMessage(update.Message.Chat.Id, "Main menu") { ReplyMarkup = keyb };
+                                var req = new SendMessage(update.Message.Chat.Id, "Main menu") { ReplyMarkup = KeyBoards.MainMenu };
 
                                 Bot.MakeRequestAsync(req);
 

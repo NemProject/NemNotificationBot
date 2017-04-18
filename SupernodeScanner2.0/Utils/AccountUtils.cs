@@ -99,7 +99,7 @@ namespace SupernodeScanner2._0.DataContextModel
         {
             var context = new AccountDataContext();
 
-            var acc = context.Accounts.Single(e => e.EncodedAddress == a.EncodedAddress);
+            var acc = context.Accounts.Where(e => e.EncodedAddress == a.EncodedAddress).Single(i => i.OwnedByUser == a.OwnedByUser);
 
             acc.LastTransactionHash = a.LastTransactionHash;
             acc.LastBlockHarvestedHeight = a.LastBlockHarvestedHeight;
@@ -107,13 +107,14 @@ namespace SupernodeScanner2._0.DataContextModel
             acc.CheckTxs = a.CheckTxs;
             context.SubmitChanges();
         }
-        internal static void UpdateAccount(List<Account> accs)
+        internal static void UpdateAccount(List<Account> accs, long user)
         {
             var context = new AccountDataContext();
             
             foreach(var acc in accs)
             {
-                var a = context.Accounts.Single(e => e.EncodedAddress == acc.EncodedAddress);
+                var a = context.Accounts.Where(e => e.EncodedAddress == acc.EncodedAddress).Single( i => i.OwnedByUser == user);
+
 
                 a.LastTransactionHash = acc.LastTransactionHash;
                 a.LastBlockHarvestedHeight = acc.LastBlockHarvestedHeight;
