@@ -19,6 +19,7 @@ namespace SupernodeScanner2._0.DBControllers
                 ChatId = chatId,
                 UserName = userName,    
             };
+
             var context = new UserDataContext();
 
             context.Users.InsertOnSubmit(user);
