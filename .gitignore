@@ -1,0 +1,8 @@
+# Add any directories, files, or patterns you don't want to be tracked by version control
+
+../.vs
+.vs/SupernodeScanner2.0/v14/.suo
+bin/
+obj/
+SupernodeScanner2.0/App.config
+SupernodeScanner2.0/SupernodeScanner2.0.csproj.user
