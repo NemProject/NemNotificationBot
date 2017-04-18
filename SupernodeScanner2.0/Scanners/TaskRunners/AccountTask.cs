@@ -17,7 +17,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
 {
     internal class AccountTask
     {
-        private static TelegramBot Bot { get; set; }
+        private TelegramBot Bot { get; set; }
         internal void RegisterAccounts(Message message)
         {
             Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
@@ -48,12 +48,14 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             AccountUtils.AddAccount(message.Chat.Id, result);
 
             // notify user the account(s) was registered
-            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses registered: ", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
+            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses registered: \n", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
             Bot.MakeRequestAsync(reqAction);
         }
 
         internal void UnregisterAccount(Message message, string text)
         {
+            Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+
             // set up regex sequence matcher
             var address = new Regex(
                 @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
@@ -75,7 +77,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 .ToList());
 
             // notify user
-            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses unregistered: ", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
+            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses unregistered: \n", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
             Bot.MakeRequestAsync(reqAction);
         }
     }
