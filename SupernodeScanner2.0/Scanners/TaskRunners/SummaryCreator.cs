@@ -35,13 +35,17 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                     try
                     {
                         days = int.Parse(Regex.Replace(text.Substring(text.LastIndexOf(':') + 1), @"[\s]+", string.Empty));
+
                         break;
                     }
                     catch (Exception)
                     {
                         var reqAction = new SendMessage(chat.Id, "Please insert the number of days for which you want a summary. eg. \"/customSummary: 4\"");
+
                         var Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+
                         Bot.MakeRequestAsync(reqAction);
+
                         return;
                     }             
             }
