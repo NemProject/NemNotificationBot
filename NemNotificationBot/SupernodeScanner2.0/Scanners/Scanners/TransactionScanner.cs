@@ -63,6 +63,8 @@ namespace SupernodeScanner2._0.Scanners
             {
                 var acc = new AccountFactory().FromEncodedAddress(userAccount.EncodedAddress);
 
+                
+
                 var transactions = await acc.GetAllTransactionsAsync();                
 
                 foreach (var t in transactions.data)
@@ -103,7 +105,7 @@ namespace SupernodeScanner2._0.Scanners
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(e);  
                 await ScanTransactions(userAccount);
             }      
         }

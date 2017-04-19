@@ -49,27 +49,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Base32Encoder, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSharp2nem.1.0.35\lib\net452\Base32Encoder.dll</HintPath>
+      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\Base32Encoder.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\CSharp2nem.1.0.35\lib\net452\BouncyCastle.Crypto.dll</HintPath>
+      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\BouncyCastle.Crypto.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Chaos.NaCl, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSharp2nem.1.0.35\lib\net452\Chaos.NaCl.dll</HintPath>
+      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\Chaos.NaCl.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="CSharp2nem, Version=1.0.30.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSharp2nem.1.0.35\lib\net452\CSharp2nem.dll</HintPath>
+      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\CSharp2nem.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NetTelegramBotApi, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NetTelegramBotApi.4.1.0\lib\net45\NetTelegramBotApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />

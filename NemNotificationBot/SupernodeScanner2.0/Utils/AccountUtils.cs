@@ -67,7 +67,7 @@ namespace SupernodeScanner2._0.DataContextModel
             var context = new AccountDataContext();
 
             foreach (var acc in accounts)
-            {
+            { 
                 Account account;
                 try
                 {

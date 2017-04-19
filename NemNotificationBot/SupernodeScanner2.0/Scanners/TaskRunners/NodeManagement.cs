@@ -113,7 +113,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 try
                 {
                     // declare message assuming nothing goes wrong
-                    msg2 = string.Concat("Your nodes were removed");
+                    msg2 = result.Length > 1 ? "Your nodes were removed" : "Your node was removed";
 
                     // make sure the user is registered
                     if (UserUtils.GetUser(chat.Id)?.UserName != chat.Username)
@@ -131,12 +131,16 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                     NodeUtils.DeleteNode(chat.Id, result.ToList());
 
                     // delete any associated deposit accounts that would have been automatically registered
-                    AccountUtils.DeleteAccount(chat.Id, nodes.Where(x => userNodes.Any(y => y.IP == x.Ip)).ToList()
-                             .Select(node => node.PayoutAddress).ToList());
+                    
+                    AccountUtils.DeleteAccount(chat.Id,
+                        userNodes.Where(y => AccountUtils.GetAccountByUser(chat.Id)
+                                    .Any(x => x.EncodedAddress == y.DepositAddress))
+                                    .Where(y => result.Any(x => x == y.IP))
+                                    .Select(acc => acc.DepositAddress).ToList());
                 }
                 catch (Exception)
                 {
-                    msg2 = "Something went wrong. please try again";
+                    msg2 = "Something went wrong. Please try again. If the problem persists, please notify kodtycoon";
                 }
                 
                 // send a message to notify user of any changes

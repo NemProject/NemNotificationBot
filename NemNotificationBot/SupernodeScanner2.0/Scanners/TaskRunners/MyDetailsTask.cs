@@ -49,20 +49,24 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
 
                 var req = new SendMessage(message.Chat.Id, "**Your registered nodes with associated accounts**");
 
-                Bot.MakeRequestAsync(req);
+                await Bot.MakeRequestAsync(req);
 
                 foreach (var s in ips)
                 {
                     req = new SendMessage(message.Chat.Id, s);
 
-                    Bot.MakeRequestAsync(req);
+                    await Bot.MakeRequestAsync(req);
                 }
                
 
                 var a = accounts.Where(y => nodes.All(x => y.EncodedAddress != x.DepositAddress))
                                 .Select(node => node.EncodedAddress).ToList();
 
-               accountString = a.Select(n  => 
+                req = new SendMessage(message.Chat.Id, "**Your registered accounts**");
+
+                if(a.Count > 0) await Bot.MakeRequestAsync(req);
+
+                accountString = a.Select(n  => 
                 "\nDeposit address: \n" + n.GetResultsWithHyphen() + 
                 "\nBalance: " + factory.FromEncodedAddress(n).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
                 "\nTransactions check: " +  AccountUtils.GetAccount(n, message.Chat.Id).CheckTxs +
@@ -72,7 +76,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                accountString = new List<string> {"Sorry something went wrong, please try again."};
+                accountString = new List<string> {"Sorry something went wrong, please try again. Possibly your node could be offline."};
             }
 
             foreach (var s in accountString)

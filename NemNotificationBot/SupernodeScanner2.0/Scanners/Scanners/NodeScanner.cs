@@ -45,13 +45,31 @@ namespace SuperNodeScanner
                         else
                         {
                             await Nofity(n, "Node: " + n.IP + " is offline or otherwise unreachable. It will be removed from your list of registered nodes.");
-                            if (n.OwnedByUser != null) NodeUtils.DeleteNode((long)n.OwnedByUser, new List<string> { n.IP });
+
+                            if (n.OwnedByUser == null) continue;
+
+                            NodeUtils.DeleteNode(
+                                chatId: (long)n.OwnedByUser, 
+                                nodes: new List<string> { n.IP });
+                            AccountUtils.DeleteAccount(
+                                chatId: (long)n.OwnedByUser,
+                                accounts: new List<string> { AccountUtils.GetAccount(n.DepositAddress, (long)n.OwnedByUser).EncodedAddress }
+                            );
                         }
                     }
                     catch (Exception)
                     {                    
                         await Nofity(n, "Node: " + n.IP + " is offline or otherwise unreachable. It will be removed from your list of registered nodes.");
-                        if (n.OwnedByUser != null) NodeUtils.DeleteNode((long)n.OwnedByUser, new List<string> { n.IP});
+
+                        if (n.OwnedByUser == null) continue;
+
+                        NodeUtils.DeleteNode(
+                            chatId: (long)n.OwnedByUser, 
+                            nodes: new List<string> { n.IP});
+                        AccountUtils.DeleteAccount(
+                            chatId: (long)n.OwnedByUser,
+                            accounts: new List<string> { AccountUtils.GetAccount(n.DepositAddress, (long)n.OwnedByUser).EncodedAddress }
+                        );
                     }           
                 }            
             }
