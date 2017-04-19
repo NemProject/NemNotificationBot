@@ -30,33 +30,33 @@ namespace SupernodeScanner2._0.Scanners
             }
         }
 
-       // private static async Task ScanPendingTransactions(Account userAccount)
-       // {
-       //     var acc = new AccountFactory().FromEncodedAddress(userAccount.EncodedAddress);
-       //
-       //     var transactions = await acc.GetUnconfirmedTransactionsAsync();
-       //
-       //     try
-       //     {
-       //         foreach (var t in transactions.data)
-       //         {
-       //             if (t.transaction.type != 4100 && t.transaction.signatures.Any(e=> e.otherAccount == userAccount.EncodedAddress)) continue;
-       //
-       //             var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
-       //
-       //             var reqAction = new SendMessage(userAccount.OwnedByUser,
-       //                 "There is a new pending multisig transaction that requires your signature on account: \n" + userAccount.EncodedAddress.GetResultsWithHyphen() +                        
-       //                 "\nTo recipient: \n" +  t.transaction.otherTrans.recipient.GetResultsWithHyphen() +
-       //                 "\nAmount: " + (t.transaction.otherTrans.amount / 1000000) + " XEM");
-       //
-       //             await bot.MakeRequestAsync(reqAction);
-       //         }
-       //     }
-       //     catch (Exception e)
-       //     {
-       //         Console.WriteLine(e);
-       //     }
-       // }
+      // private static async Task ScanPendingTransactions(Account userAccount)
+      // {
+      //     var acc = new AccountFactory().FromEncodedAddress(userAccount.EncodedAddress);
+      // 
+      //     var transactions = await acc.GetUnconfirmedTransactionsAsync();
+      // 
+      //     try
+      //     {
+      //         foreach (var t in transactions.data)
+      //         {
+      //             if (t.transaction.type != 4100 && t.transaction.signatures.All(e=> e.otherAccount != userAccount.EncodedAddress)) continue;
+      // 
+      //             var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+      // 
+      //             var reqAction = new SendMessage(userAccount.OwnedByUser,
+      //                 "There is a new pending multisig transaction that requires your signature on account: \n" + userAccount.EncodedAddress.GetResultsWithHyphen() +                        
+      //                 "\nTo recipient: \n" +  t.transaction.otherTrans.recipient.GetResultsWithHyphen() +
+      //                 "\nAmount: " + (t.transaction.otherTrans.amount / 1000000) + " XEM");
+      // 
+      //             await bot.MakeRequestAsync(reqAction);
+      //         }
+      //     }
+      //     catch (Exception e)
+      //     {
+      //         Console.WriteLine(e);
+      //     }
+      // }
         private static async Task ScanTransactions(Account userAccount)
         {
             try

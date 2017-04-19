@@ -38,24 +38,6 @@ namespace SupernodeScanner2._0.Scanners
 
                 var blocks = await nemAcc.GetHarvestingInfoAsync();
 
-                if (nemAcc.GetAccountInfoAsync().Result.Meta.RemoteStatus != "ACTIVE" && nemAcc.GetAccountInfoAsync().Result.Meta.Status != "UNLOCKED" && userAccount.CheckBlocks)
-                {
-                    var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
-
-                    var reqAction = new SendMessage(userAccount.OwnedByUser, 
-                        "The account: \n" + userAccount.EncodedAddress.GetResultsWithHyphen() + 
-                        " \nhas stopped harvesting. " +
-                        "Harvesting notifications for this account have been turned off. " +
-                        "Restart harvesting and then opt in to harvesting notifications for this account.");
-
-                    userAccount.CheckBlocks = false;
-
-                    AccountUtils.UpdateAccount(userAccount);
-
-                    await bot.MakeRequestAsync(reqAction);
-
-                    return;
-                }
                 foreach (var t in blocks.data)
                 {
                     if (blocks.data.Count <= 0 || userAccount.LastBlockHarvestedHeight >= t?.height) continue;
