@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CSharp2nem;
 using NetTelegramBotApi;
@@ -63,8 +64,9 @@ namespace SupernodeScanner2._0.Scanners
                     await Notify(userAccount, t);
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.WriteLine(e);
                 await ScanBlocks(userAccount);
             }
            

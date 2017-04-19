@@ -24,6 +24,7 @@ namespace SuperNodeScanner
            
             while (true)
             {
+                
                 bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
 
                 var nodes = NodeUtils.GetAllNodes();
@@ -71,8 +72,8 @@ namespace SuperNodeScanner
                             accounts: new List<string> { AccountUtils.GetAccount(n.DepositAddress, (long)n.OwnedByUser).EncodedAddress }
                         );
                     }           
-                }            
-            }
+                }              
+            }           
         }
 
         internal async Task<List<string>> ScanTests(SuperNode n)

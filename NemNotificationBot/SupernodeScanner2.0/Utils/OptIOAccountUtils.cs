@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using CSharp2nem;
 using NetTelegramBotApi;
 using NetTelegramBotApi.Requests;
 using NetTelegramBotApi.Types;
@@ -21,7 +22,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             var address = new Regex(
                 @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
-            var result = address.Matches(message.Text).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
 
             var userAccounts = AccountUtils.GetAccountByUser(message.Chat.Id)
                 .Where(e => result.Any(i => i == e.EncodedAddress)).ToList();
@@ -34,7 +35,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             }
 
             var reqAction = new SendMessage(message.Chat.Id,
-                userAccounts.Aggregate("Opted into tx notification for accounts: \n \n", (current, n) => current + n.EncodedAddress + "\n"));
+                userAccounts.Aggregate("Opted into tx notification for accounts: \n \n", (current, n) => current + n.EncodedAddress.GetResultsWithHyphen() + "\n"));
 
             bot.MakeRequestAsync(reqAction);
         }
@@ -44,7 +45,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             var address = new Regex(
                 @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
-            var result = address.Matches(message.Text).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
 
             var userAccounts = AccountUtils.GetAccountByUser(message.Chat.Id)
                 .Where(e => result.Any(i => i == e.EncodedAddress)).ToList();
@@ -57,7 +58,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             }
 
             var reqAction = new SendMessage(message.Chat.Id,
-                userAccounts.Aggregate("Opted out of tx notification for accounts: \n \n", (current, n) => current + n.EncodedAddress + "\n"));
+                userAccounts.Aggregate("Opted out of tx notification for accounts: \n \n", (current, n) => current + n.EncodedAddress.GetResultsWithHyphen() + "\n"));
 
             bot.MakeRequestAsync(reqAction);
         }
@@ -67,7 +68,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             var address = new Regex(
                 @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
-            var result = address.Matches(message.Text).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
 
             var userAccounts = AccountUtils.GetAccountByUser(message.Chat.Id)
                 .Where(e => result.Any(i => i == e.EncodedAddress)).ToList();
@@ -80,7 +81,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             }
 
             var reqAction = new SendMessage(message.Chat.Id,
-                userAccounts.Aggregate("Opted out of harvesting notification for accounts: \n \n", (current, n) => current + n.EncodedAddress + "\n"));
+                userAccounts.Aggregate("Opted out of harvesting notification for accounts: \n \n", (current, n) => current + n.EncodedAddress.GetResultsWithHyphen() + "\n"));
 
             bot.MakeRequestAsync(reqAction);
         }
@@ -90,7 +91,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             var address = new Regex(
                 @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
-            var result = address.Matches(message.Text).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
 
             var userAccounts = AccountUtils.GetAccountByUser(message.Chat.Id)
                 .Where(e => result.Any(i => i == e.EncodedAddress)).ToList();
@@ -103,7 +104,7 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
             }
 
             var reqAction = new SendMessage(message.Chat.Id,
-                userAccounts.Aggregate("Opted in to harvesting notification for accounts: \n \n", (current, n) => current + n.EncodedAddress + "\n"));
+                userAccounts.Aggregate("Opted in to harvesting notification for accounts: \n \n", (current, n) => current + n.EncodedAddress.GetResultsWithHyphen() + "\n"));
 
             bot.MakeRequestAsync(reqAction);
         }
