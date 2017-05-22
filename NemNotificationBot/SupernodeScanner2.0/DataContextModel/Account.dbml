@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="SupernodeScannerDB" Class="AccountDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=HOME\SQLEXPRESS;Initial Catalog=SupernodeScannerDB;Integrated Security=True" SettingsObjectName="SupernodeScanner2._0.Properties.Settings" SettingsPropertyName="SupernodeScannerDBConnectionString1" Provider="System.Data.SqlClient" />
+  <Connection Mode="AppSettings" ConnectionString="Data Source=EC2AMAZ-JQ4HT8N\SQLEXPRESS;Initial Catalog=SupernodeScannerDB;Integrated Security=True" SettingsObjectName="SupernodeScanner2._0.Properties.Settings" SettingsPropertyName="SupernodeScannerDBConnectionString2" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Accounts" Member="Accounts">
     <Type Name="Account">
       <Column Name="EncodedAddress" Type="System.String" DbType="VarChar(60) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />

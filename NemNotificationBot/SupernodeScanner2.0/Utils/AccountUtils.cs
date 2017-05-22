@@ -29,9 +29,9 @@ namespace SupernodeScanner2._0.DataContextModel
                         continue;
                 }
 
-                if (GetAccount(acc, chatId)?.EncodedAddress != null) return;
+                if (GetAccount(add: acc, user: chatId)?.EncodedAddress != null) return;
 
-                var a = new AccountFactory().FromEncodedAddress(acc);
+                var a = new AccountFactory().FromEncodedAddress(encodedAddress: acc);
                 
                 var blocks = a.GetHarvestingInfoAsync().Result.data; // check hash
 
@@ -42,14 +42,14 @@ namespace SupernodeScanner2._0.DataContextModel
                     
                     OwnedByUser = chatId,
                     EncodedAddress = acc,
-                    LastTransactionHash = transactions?[0]?.meta?.hash?.data ?? "none",
-                    LastBlockHarvestedHeight =  blocks.Count > 0 ? blocks[0]?.height : 0,
+                    LastTransactionHash = transactions?[index: 0]?.meta?.hash?.data ?? "none",
+                    LastBlockHarvestedHeight =  blocks.Count > 0 ? blocks[index: 0]?.height : 0,
                     CheckBlocks = true,
                     CheckTxs = true
 
                 };
                 
-                context.Accounts.InsertOnSubmit(account);
+                context.Accounts.InsertOnSubmit(entity: account);
 
                 try
                 {
@@ -71,14 +71,14 @@ namespace SupernodeScanner2._0.DataContextModel
                 Account account;
                 try
                 {
-                    account = context.Accounts.Where(e=>e.OwnedByUser == chatId).Single(e => e.EncodedAddress == acc);
+                    account = context.Accounts.Where(predicate: e=>e.OwnedByUser == chatId).Single(predicate: e => e.EncodedAddress == acc);
                 }
                 catch (Exception)
                 {
                     continue;
                 }
 
-                context.Accounts.DeleteOnSubmit(account);
+                context.Accounts.DeleteOnSubmit(entity: account);
 
                 context.SubmitChanges();
             }   
@@ -88,23 +88,23 @@ namespace SupernodeScanner2._0.DataContextModel
         internal static List<Account> GetAccountByUser(long chatId)
         {
 
-            if (UserUtils.GetUser(chatId)?.UserName == null) return null;
+            if (UserUtils.GetUser(chatId: chatId)?.ChatId == null) return null;
 
             var context = new AccountDataContext();
 
-            return context.Accounts.Where(node => node.OwnedByUser == chatId).ToList();
+            return context.Accounts.Where(predicate: node => node.OwnedByUser == chatId).ToList();
         }
 
-        internal static void UpdateAccount(Account a)
+        internal static void UpdateAccount(Account usrAcc)
         {
             var context = new AccountDataContext();
 
-            var acc = context.Accounts.Where(e => e.EncodedAddress == a.EncodedAddress).Single(i => i.OwnedByUser == a.OwnedByUser);
+            var acc = context.Accounts.Where(predicate: e => e.EncodedAddress == usrAcc.EncodedAddress).Single(predicate: i => i.OwnedByUser == usrAcc.OwnedByUser);
 
-            acc.LastTransactionHash = a.LastTransactionHash;
-            acc.LastBlockHarvestedHeight = a.LastBlockHarvestedHeight;
-            acc.CheckBlocks = a.CheckBlocks;
-            acc.CheckTxs = a.CheckTxs;
+            acc.LastTransactionHash = usrAcc.LastTransactionHash;
+            acc.LastBlockHarvestedHeight = usrAcc.LastBlockHarvestedHeight;
+            acc.CheckBlocks = usrAcc.CheckBlocks;
+            acc.CheckTxs = usrAcc.CheckTxs;
             context.SubmitChanges();
         }
         internal static void UpdateAccount(List<Account> accs, long user)
@@ -113,7 +113,7 @@ namespace SupernodeScanner2._0.DataContextModel
             
             foreach(var acc in accs)
             {
-                var a = context.Accounts.Where(e => e.EncodedAddress == acc.EncodedAddress).Single( i => i.OwnedByUser == user);
+                var a = context.Accounts.Where(predicate: e => e.EncodedAddress == acc.EncodedAddress).Single( predicate: i => i.OwnedByUser == user);
 
 
                 a.LastTransactionHash = acc.LastTransactionHash;
@@ -136,7 +136,7 @@ namespace SupernodeScanner2._0.DataContextModel
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(value: e);
                 return null;
             }
 
@@ -147,7 +147,7 @@ namespace SupernodeScanner2._0.DataContextModel
 
             try
             {
-              var acc = context.Accounts.Where(e => e.OwnedByUser == user).Single(e => e.EncodedAddress == add);
+              var acc = context.Accounts.Where(predicate: e => e.OwnedByUser == user).Single(predicate: e => e.EncodedAddress == add);
              
               return acc;
             }

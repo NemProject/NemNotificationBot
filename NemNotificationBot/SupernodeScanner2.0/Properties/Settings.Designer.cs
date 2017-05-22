@@ -12,7 +12,7 @@ namespace SupernodeScanner2._0.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "14.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -64,6 +64,17 @@ namespace SupernodeScanner2._0.Properties {
         public string SupernodeScannerDBConnectionString1 {
             get {
                 return ((string)(this["SupernodeScannerDBConnectionString1"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
+        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=EC2AMAZ-JQ4HT8N\\SQLEXPRESS;Initial Catalog=SupernodeScannerDB;Integra" +
+            "ted Security=True")]
+        public string SupernodeScannerDBConnectionString2 {
+            get {
+                return ((string)(this["SupernodeScannerDBConnectionString2"]));
             }
         }
     }

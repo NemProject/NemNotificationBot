@@ -25,97 +25,118 @@ namespace SuperNodeScanner
             while (true)
             {
                 
-                bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+                bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
                 var nodes = NodeUtils.GetAllNodes();
 
                 foreach (var n in nodes)
-                {                   
+                {
                     try
                     {
-                        var client = new NodeClient();
+                        var con = new Connection();
 
-                        client.Connection.SetHost(n.IP);
+                        con.SetHost(n.IP);
+
+                        var client = new NodeClient(con);
 
                         var info = client.ExtendedNodeInfo().Result;
+                        
 
+                        if (n.WentOffLine != null)
+                        {
+
+                            var nis = new NisClient(con);
+                            
+                            if (nis.Status().Result.Code != 6) continue;
+
+                            await Nofity(
+                                node: n,
+                                msg: "Node: " + n.Alias + "\n" + " With IP: " + n.IP +
+                                "\nis back online.");
+
+                            n.WentOffLine = null;
+
+                            NodeUtils.UpdateNode(snode: n, chatId: n.OwnedByUser);
+                        }
                         if (info.Node.Endpoint.Host == n.IP)
                         {
-                            await ScanTests(n);
-                        }
-                        else
+                            
+                            await ScanTests(n: n);
+                        }   
+                    }
+                    catch (Exception e)
+                    {
+                        if (n.WentOffLine == null)
                         {
-                            await Nofity(n, "Node: " + n.IP + " is offline or otherwise unreachable. It will be removed from your list of registered nodes.");
+                            await Nofity(node: n,
+                                msg: "Node: " + n.Alias + "\n" + "With IP: " + n.IP +
+                                " \nis offline or otherwise unreachable. It will be removed from your list of registered nodes in 48 hours if it is not reachable in that time.");
 
-                            if (n.OwnedByUser == null) continue;
+                            n.WentOffLine = DateTime.Now;
+
+                            NodeUtils.UpdateNode(snode: n, chatId: n.OwnedByUser);
+                        }
+                        else if (n.WentOffLine < DateTime.Now.AddDays(value: -2))
+                        {
+                            await Nofity(node: n,
+                                msg: "Node: " + n.IP +
+                                " has been offline or otherwise unreachable for 48 hours. It will be removed from your list of registered nodes.");
 
                             NodeUtils.DeleteNode(
-                                chatId: (long)n.OwnedByUser, 
+                                chatId: (long)n.OwnedByUser,
                                 nodes: new List<string> { n.IP });
+                            
                             AccountUtils.DeleteAccount(
                                 chatId: (long)n.OwnedByUser,
-                                accounts: new List<string> { AccountUtils.GetAccount(n.DepositAddress, (long)n.OwnedByUser).EncodedAddress }
+                                accounts: new List<string> { AccountUtils.GetAccount(add: n.DepositAddress, user: (long)n.OwnedByUser).EncodedAddress }
                             );
                         }
                     }
-                    catch (Exception)
-                    {                    
-                        await Nofity(n, "Node: " + n.IP + " is offline or otherwise unreachable. It will be removed from your list of registered nodes.");
-
-                        if (n.OwnedByUser == null) continue;
-
-                        NodeUtils.DeleteNode(
-                            chatId: (long)n.OwnedByUser, 
-                            nodes: new List<string> { n.IP});
-                        AccountUtils.DeleteAccount(
-                            chatId: (long)n.OwnedByUser,
-                            accounts: new List<string> { AccountUtils.GetAccount(n.DepositAddress, (long)n.OwnedByUser).EncodedAddress }
-                        );
-                    }           
-                }              
+                }
             }           
         }
 
-        internal async Task<List<string>> ScanTests(SuperNode n)
+        internal async Task ScanTests(SuperNode n)
         {
             try
-            {
-                var lastTest = NodeClient.SuperNodeByIp(n.IP).Result;
+            {            
+                var lastTest = NodeClient.SuperNodeByIp(ip: n.IP).Result;
 
                 var result = new List<string>();
 
-                var tests = lastTest.TestResults.nodeDetails.OrderBy(e => e.id).ToList();
+                if (lastTest.TestResults== null) return;
 
+                var tests = lastTest.TestResults.nodeDetails.OrderBy(keySelector: e => e.id).ToList();
+               
                 for (var x = 0; x < 4; x++)
                 {
-                    if (!(n.LastTest < long.Parse(tests[x].id))) continue;
+                    if (!(n.LastTest < long.Parse(s: tests[index: x].id))) continue;
 
-                    n.LastTest = int.Parse(tests[x].id);
+                    n.LastTest = int.Parse(s: tests[index: x].id);
 
-                    result = ValidateTests(tests[x]);
+                    result = ValidateTests(data: tests[index: x]);
+
+                    if (result == null) continue;
 
                     if (result.Count == 0) continue;
 
                     var msg = "Node: " + n.Alias + 
                             "\nWith IP: " + n.IP + 
-                           " \nfailed tests on " + "\nDate: " + tests[x].dateAndTime.Substring(0, 10) + 
-                                                   "\nTime: " + tests[x].dateAndTime.Substring(11, 8) + "\n";
+                           " \nfailed tests on " + "\nDate: " + tests[index: x].dateAndTime.Substring(startIndex: 0, length: 10) + 
+                                                   "\nTime: " + tests[index: x].dateAndTime.Substring(startIndex: 11, length: 8) + "\n";
 
-                    msg = result.Aggregate(msg, (current, t) => current + (t + ": FAILED\n") + "https://supernodes.nem.io/details/" + n.SNodeID);
+                    msg = result.Aggregate(seed: msg, func: (current, t) => current + (t + ": FAILED\n") + "https://supernodes.nem.io/details/" + n.SNodeID + "\n");
 
-                    if (n.OwnedByUser != null)
-                    {
-                        NodeUtils.UpdateNode(n, (long)n.OwnedByUser);                        
-                    }
+     
+                    NodeUtils.UpdateNode(snode: n, chatId: (long)n.OwnedByUser);                        
+                    
 
-                    await Nofity(n, msg);                   
+                    await Nofity(node: n, msg: msg);                   
                 }
-
-                return result;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-               return await ScanTests(n);
+                Console.WriteLine(e);
             }
             
         }
@@ -125,18 +146,17 @@ namespace SuperNodeScanner
             return (from propertyInfo
                     in data.GetType().GetProperties()
                     where propertyInfo.PropertyType == typeof(bool)
-                    where !(bool)propertyInfo.GetValue(data, null)
+                    where !(bool)propertyInfo.GetValue(obj: data, index: null)
                     select propertyInfo.Name
                     ).ToList();
         }
 
-        private async Task Nofity(SuperNode n, string msg)
+        private async Task Nofity(SuperNode node, string msg)
         {
-            if (n.OwnedByUser != null)
-            {
-                var reqAction = new SendMessage((long)n.OwnedByUser, msg);
-                await bot.MakeRequestAsync(reqAction);
-            }
+
+            var reqAction = new SendMessage(chatId: (long)node.OwnedByUser, text: msg);
+            await bot.MakeRequestAsync(request: reqAction);
+            
         }     
     }
 }

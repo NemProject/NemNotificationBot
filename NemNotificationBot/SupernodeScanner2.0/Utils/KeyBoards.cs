@@ -12,11 +12,11 @@ namespace SupernodeScanner2._0
         internal static ReplyKeyboardMarkup OptMenu  = new ReplyKeyboardMarkup()
         {
             Keyboard = new[] {
-                                new[] { new KeyboardButton("/optInTxsGlobal") ,  new KeyboardButton("/optOutTxsGlobal") },
-                                new[] { new KeyboardButton("/optInHarvestingGlobal"), new KeyboardButton("/optOutHarvestingGlobal") },
-                                new[] { new KeyboardButton("/optInTxsAcc:") ,  new KeyboardButton("/optOutTxsAcc:") },
-                                new[] { new KeyboardButton("/optOutHarvestingAcc:") ,  new KeyboardButton("/optOutHarvestingAcc:") },
-                                new[] { new KeyboardButton("/back")}
+                                new[] { new KeyboardButton(text: "/optInTxsGlobal") ,  new KeyboardButton(text: "/optOutTxsGlobal") },
+                                new[] { new KeyboardButton(text: "/optInHarvestingGlobal"), new KeyboardButton(text: "/optOutHarvestingGlobal") },
+                                new[] { new KeyboardButton(text: "/optInTxsAcc:") ,  new KeyboardButton(text: "/optOutTxsAcc:") },
+                                new[] { new KeyboardButton(text: "/optInHarvestingAcc:") ,  new KeyboardButton(text: "/optOutHarvestingAcc:") },
+                                new[] { new KeyboardButton(text: "/back")}
                              },
             OneTimeKeyboard = true,
             ResizeKeyboard = true
@@ -26,11 +26,11 @@ namespace SupernodeScanner2._0
         {
             Keyboard = new[]
                             {
-                                new[] { new KeyboardButton("/registerNode:"), new KeyboardButton("/unregisterNode:") },
-                                new[] { new KeyboardButton("/registerAccount:"), new KeyboardButton("/unregisterAccount:") },
-                                new[] { new KeyboardButton("/optIO"), new KeyboardButton("/harvestingSpace") },
-                                new[] { new KeyboardButton("/summary"), new KeyboardButton("/myDetails") },
-                                new[] { new KeyboardButton("/help") }
+                                new[] { new KeyboardButton(text: "/registerNode:"), new KeyboardButton(text: "/unregisterNode:") },
+                                new[] { new KeyboardButton(text: "/registerAccount:"), new KeyboardButton(text: "/unregisterAccount:") },
+                                new[] { new KeyboardButton(text: "/optIO"), new KeyboardButton(text: "/harvestingSpace") },
+                                new[] { new KeyboardButton(text: "/summary"), new KeyboardButton(text: "/myDetails") },
+                                new[] { new KeyboardButton(text: "/help") }
                             },
             OneTimeKeyboard = true,
             ResizeKeyboard = true
@@ -40,9 +40,9 @@ namespace SupernodeScanner2._0
         {
             Keyboard = new[]
                             {
-                                new[] { new KeyboardButton("/dailySummary"), new KeyboardButton("/sevenDaySummary") },
-                                new[] { new KeyboardButton("/thirtyOneDaySummary"), new KeyboardButton("/customSummary:") },
-                                new[] { new KeyboardButton("/back") }
+                                new[] { new KeyboardButton(text: "/dailySummary"), new KeyboardButton(text: "/sevenDaySummary") },
+                                new[] { new KeyboardButton(text: "/thirtyOneDaySummary"), new KeyboardButton(text: "/customSummary:") },
+                                new[] { new KeyboardButton(text: "/back") }
                             },
             OneTimeKeyboard = true,
             ResizeKeyboard = true

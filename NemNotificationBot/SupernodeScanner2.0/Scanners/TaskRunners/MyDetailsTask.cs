@@ -16,21 +16,21 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
     {
         internal async void ReturnMyDetails(Message message)
         {
-            var Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+            var Bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
-            var u = UserUtils.GetUser(message.From.Id);
+            var u = UserUtils.GetUser(chatId: message.From.Id);
 
-            if (u == null || u.UserName != message.From.Username)
+            if (u.ChatId != message.Chat.Id)
             {
                
-                var req = new SendMessage(message.Chat.Id, "You are not registered");
-                await Bot.MakeRequestAsync(req);
+                var req = new SendMessage(chatId: message.Chat.Id, text: "You are not registered");
+                await Bot.MakeRequestAsync(request: req);
                 return;
             }
 
-            var nodes = NodeUtils.GetNodeByUser(message.From.Id);
+            var nodes = NodeUtils.GetNodeByUser(chatId: message.From.Id);
 
-            var accounts = AccountUtils.GetAccountByUser(message.From.Id);
+            var accounts = AccountUtils.GetAccountByUser(chatId: message.From.Id);
 
             List<string> accountString;
             try
@@ -38,52 +38,52 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 
                 var factory = new AccountFactory();
                
-                   var ips = nodes.Select(n => ("Alias: " + n.Alias +
+                   var ips = nodes.Select(selector: n => ("Alias: " + n.Alias +
                     "\nIP: " + n.IP +
-                    "\nDeposit address: \n" + (accounts.All(e => e.EncodedAddress != n.DepositAddress) ? "[ACCOUNT UNREGISTERED] " : "") + n.DepositAddress.GetResultsWithHyphen() +
-                    "\nBalance: " + factory.FromEncodedAddress(n.DepositAddress).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
-                    "\nTransactions check: " + AccountUtils.GetAccount(n.DepositAddress, message.Chat.Id).CheckTxs  +
-                    "\nHarvesting check: " + AccountUtils.GetAccount(n.DepositAddress, message.Chat.Id).CheckBlocks +
+                    "\nDeposit address: \n" + (accounts.All(predicate: e => e.EncodedAddress != n.DepositAddress) ? "[ACCOUNT UNREGISTERED] " : "") + n.DepositAddress.GetResultsWithHyphen() +
+                    "\nBalance: " + factory.FromEncodedAddress(encodedAddress: n.DepositAddress).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
+                    "\nTransactions check: " + AccountUtils.GetAccount(add: n.DepositAddress, user: message.Chat.Id).CheckTxs  +
+                    "\nHarvesting check: " + AccountUtils.GetAccount(add: n.DepositAddress, user: message.Chat.Id).CheckBlocks +
                     "\nhttps://supernodes.nem.io/details/" + n.SNodeID +
                     "\nhttp://explorer.ournem.com/#/s_account?account=" + n.DepositAddress + "\n\n")).ToList();
 
-                var req = new SendMessage(message.Chat.Id, "**Your registered nodes with associated accounts**");
+                var req = new SendMessage(chatId: message.Chat.Id, text: "**Your registered nodes with associated accounts**");
 
-                await Bot.MakeRequestAsync(req);
+                await Bot.MakeRequestAsync(request: req);
 
                 foreach (var s in ips)
                 {
-                    req = new SendMessage(message.Chat.Id, s);
+                    req = new SendMessage(chatId: message.Chat.Id, text: s);
 
-                    await Bot.MakeRequestAsync(req);
+                    await Bot.MakeRequestAsync(request: req);
                 }
                
 
-                var a = accounts.Where(y => nodes.All(x => y.EncodedAddress != x.DepositAddress))
-                                .Select(node => node.EncodedAddress).ToList();
+                var a = accounts.Where(predicate: y => nodes.All(predicate: x => y.EncodedAddress != x.DepositAddress))
+                                .Select(selector: node => node.EncodedAddress).ToList();
 
-                req = new SendMessage(message.Chat.Id, "**Your registered accounts**");
+                req = new SendMessage(chatId: message.Chat.Id, text: "**Your registered accounts**");
 
-                if(a.Count > 0) await Bot.MakeRequestAsync(req);
+                if(a.Count > 0) await Bot.MakeRequestAsync(request: req);
 
-                accountString = a.Select(n  => 
+                accountString = a.Select(selector: n  => 
                 "\nDeposit address: \n" + n.GetResultsWithHyphen() + 
-                "\nBalance: " + factory.FromEncodedAddress(n).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
-                "\nTransactions check: " +  AccountUtils.GetAccount(n, message.Chat.Id).CheckTxs +
-                "\nHarvesting check: " +  AccountUtils.GetAccount(n, message.Chat.Id).CheckBlocks +
+                "\nBalance: " + factory.FromEncodedAddress(encodedAddress: n).GetAccountInfoAsync().Result.Account.Balance / 1000000 +
+                "\nTransactions check: " +  AccountUtils.GetAccount(add: n, user: message.Chat.Id).CheckTxs +
+                "\nHarvesting check: " +  AccountUtils.GetAccount(add: n, user: message.Chat.Id).CheckBlocks +
                 "\nhttp://explorer.ournem.com/#/s_account?account=" + n + "\n\n").ToList();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(value: e);
                 accountString = new List<string> {"Sorry something went wrong, please try again. Possibly your node could be offline."};
             }
 
             foreach (var s in accountString)
             {
-                var reqAction = new SendMessage(message.Chat.Id, s);
+                var reqAction = new SendMessage(chatId: message.Chat.Id, text: s);
 
-                Bot.MakeRequestAsync(reqAction);
+                Bot.MakeRequestAsync(request: reqAction);
             }
            
         }

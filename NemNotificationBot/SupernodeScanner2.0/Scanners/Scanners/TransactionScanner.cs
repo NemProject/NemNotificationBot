@@ -25,7 +25,7 @@ namespace SupernodeScanner2._0.Scanners
              
                 foreach (var a in accounts)
                 { 
-                    await ScanTransactions(a);
+                    await ScanTransactions(userAccount: a);
                    // await ScanPendingTransactions(a);
                 }
             }
@@ -62,7 +62,7 @@ namespace SupernodeScanner2._0.Scanners
         {
             try
             {
-                var acc = new AccountFactory().FromEncodedAddress(userAccount.EncodedAddress);
+                var acc = new AccountFactory().FromEncodedAddress(encodedAddress: userAccount.EncodedAddress);
 
                 
 
@@ -70,19 +70,19 @@ namespace SupernodeScanner2._0.Scanners
 
                 foreach (var t in transactions.data)
                 {
-                   if (t.transaction.type != 257 && t.transaction.type != 4100) continue;
+                   if (t.transaction.type != 257 && t.transaction?.otherTrans?.type != 257) continue;
 
-                    if (transactions.data.Count <= 0 || userAccount.LastTransactionHash == transactions.data?[0]?.meta?.hash?.data)
+                    if (transactions.data.Count <= 0 || userAccount.LastTransactionHash == transactions.data?[index: 0]?.meta?.hash?.data)
                         break;
 
-                    if (userAccount.LastTransactionHash == t.meta?.hash?.data)
-                    {
+                        if (userAccount.LastTransactionHash == t.meta?.hash?.data)
+                        {
                         
-                        userAccount.LastTransactionHash = transactions.data?[0]?.meta?.hash?.data;
-                        AccountUtils.UpdateAccount(userAccount);
+                            userAccount.LastTransactionHash = transactions.data?[index: 0]?.meta?.hash?.data;
+                            AccountUtils.UpdateAccount(usrAcc: userAccount);
 
-                        break;
-                    }
+                            break;
+                        }
 
                     var summary = new AccountTxSummary
                     {                       
@@ -90,39 +90,37 @@ namespace SupernodeScanner2._0.Scanners
                         AmountOut = t.transaction.recipient != userAccount.EncodedAddress ? t.transaction.amount : 0,
                         MonitoredAccount = userAccount.EncodedAddress,
                         Recipient = t.transaction.type == 257 ?  t.transaction.recipient : t.transaction.otherTrans.recipient,
-                        Sender =  AddressEncoding.ToEncoded(0x68, new PublicKey(t.transaction.type == 257 ?  t.transaction.signer : t.transaction.otherTrans.signer)),
+                        Sender =  AddressEncoding.ToEncoded(network: 0x68, publicKey: new PublicKey(key: t.transaction.type == 257 ?  t.transaction.signer : t.transaction.otherTrans.signer)),
                         DateOfInput = DateTime.Now,
                         OwnedByUser = userAccount.OwnedByUser
                         
                     };
 
-                    SummaryUtils.AddTxSummary(summary);
+                    SummaryUtils.AddTxSummary(s: summary);
 
                     if (userAccount.CheckTxs == false) continue;
                     
-                    await Notify(userAccount, t);
+                    await Notify(a: userAccount, t: t);
 
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e); 
-                 
-                await ScanTransactions(userAccount);
+                Console.WriteLine(value: e);                
             }      
         }
 
         private static async Task Notify(Account a, Transactions.TransactionData t)
         {
-            var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+            var bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
-            var reqAction = new SendMessage(a.OwnedByUser, 
-                "There is a new " + ( t.transaction.type == 257 ? "" : "multisig ") + "transaction on account: \n" + a.EncodedAddress.GetResultsWithHyphen() + 
+            var reqAction = new SendMessage(chatId: a.OwnedByUser, 
+                text: "There is a new " + ( t.transaction.type == 257 ? "" : "multisig ") + "transaction on account: \n" + a.EncodedAddress.GetResultsWithHyphen() + 
                 "\nhttp://explorer.ournem.com/#/s_account?account=" + a.EncodedAddress + 
                 "\nRecipient: \n"+ (t.transaction.type == 257 ? t.transaction.recipient.GetResultsWithHyphen() : t.transaction.otherTrans.recipient.GetResultsWithHyphen()) + 
                 "\nAmount: " + (t.transaction.amount / 1000000) + " XEM");
 
-            await bot.MakeRequestAsync(reqAction);           
+            await bot.MakeRequestAsync(request: reqAction);           
         }
     }
 }

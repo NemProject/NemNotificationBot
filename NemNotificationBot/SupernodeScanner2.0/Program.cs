@@ -17,19 +17,19 @@ namespace SuperNodeScanner
         private static Task Bs { get; set; }
         private static void Main(string[] args)
         {
-            System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+           System.Net.ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
          
-            TelegramScanner = new TelegramScanner();
-            T2 = Task.Run(() => TelegramScanner.RunBot());
+           TelegramScanner = new TelegramScanner();
+           T2 = Task.Run(action: () => TelegramScanner.RunBot());
 
-            NodeScanner = new NodeScanner();
-            Ns = Task.Run(() => NodeScanner.TestNodes());
+           NodeScanner = new NodeScanner();
+           Ns = Task.Run(action: () => NodeScanner.TestNodes());
 
-            TransactionScanner = new TransactionScanner();
-            Ts = Task.Run(() => TransactionScanner.ScanAccounts());
+           TransactionScanner = new TransactionScanner();
+           Ts = Task.Run(action: () => TransactionScanner.ScanAccounts());
 
             BlockScanner = new HarvestedBlockScanner();
-            Bs = Task.Run(() => BlockScanner.ScanBlocks());
+            Bs = Task.Run(action: () => BlockScanner.ScanBlocks());
 
             Console.ReadKey();
         }

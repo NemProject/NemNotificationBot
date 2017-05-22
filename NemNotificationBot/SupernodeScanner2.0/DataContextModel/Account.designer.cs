@@ -36,7 +36,7 @@ namespace SupernodeScanner2._0.DataContextModel
     #endregion
 		
 		public AccountDataContext() : 
-				base(global::SupernodeScanner2._0.Properties.Settings.Default.SupernodeScannerDBConnectionString1, mappingSource)
+				base(global::SupernodeScanner2._0.Properties.Settings.Default.SupernodeScannerDBConnectionString2, mappingSource)
 		{
 			OnCreated();
 		}

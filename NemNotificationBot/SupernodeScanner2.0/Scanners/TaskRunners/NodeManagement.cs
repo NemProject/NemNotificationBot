@@ -19,33 +19,33 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
     {
         internal void ManageNodes(Chat chat, string text)
         {
-            var Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+            var Bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
             // if the user is not known, add the user to the database
-            if (UserUtils.GetUser(chat.Id)?.UserName == null)
+            if (UserUtils.GetUser(chatId: chat.Id)?.ChatId == null)
             {
                 // add user based on their chat ID
-                UserUtils.AddUser(chat.Username, chat.Id);
+                UserUtils.AddUser(userName: chat.Username, chatId: chat.Id);
 
                 // declare message
                 var msg1 = "You have been automatically registered, one moment please";
 
                 // send message notifying they have been registered
-                var reqAction1 = new SendMessage(chat.Id, msg1);
+                var reqAction1 = new SendMessage(chatId: chat.Id, text: msg1);
 
                 // send message
-                Bot.MakeRequestAsync(reqAction1);
+                Bot.MakeRequestAsync(request: reqAction1);
             }
 
             // set up regex pattern matching sequences.
-            var ip = new Regex(@"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
-            var ip2 = new Regex(@"[a-zA-Z]{1,15}\.[a-zA-Z]{1,15}\.[a-zA-Z]{1,15}");
-            var ip3 = new Regex(@"[a-zA-Z]{1,15}\.[a-zA-Z]{1,15}");
+            var ip = new Regex(pattern: @"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b");
+            var ip2 = new Regex(pattern: @"[a-zA-Z0-9]{1,20}\.[a-zA-Z0-9]{1,20}\.[a-zA-Z0-9]{1,20}");
+            var ip3 = new Regex(pattern: @"[a-zA-Z0-9]{1,20}\.[a-zA-Z0-9]{1,20}");
 
             // scan list of submitted ip's for any valid sequences
-            var result = ip.Matches(text).Cast<Match>().Select(m => m.Value)
-                .Concat(ip2.Matches(text).Cast<Match>().Select(m => m.Value))
-                .Concat(ip3.Matches(text).Cast<Match>().Select(m => m.Value)).ToArray();
+            var result = ip.Matches(input: text).Cast<Match>().Select(selector: m => m.Value)
+                .Concat(second: ip2.Matches(input: text).Cast<Match>().Select(selector: m => m.Value))
+                .Concat(second: ip3.Matches(input: text).Cast<Match>().Select(selector: m => m.Value)).ToArray();
 
             // declare a nodeClient to retrieve node data.
             var nodeClient = new NodeClient();
@@ -62,16 +62,16 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
 
                     if (node.PayoutAddress == null)
                     {
-                        var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
-                        var req = new SendMessage(chat.Id, "One of the nodes you have submitted is invalid, or has not been accepted into the supernode program yet, or it has not recieved its first payment. The invalid node was node registered. Please check your nodes and try again");
-                        bot.MakeRequestAsync(req);
+                        var bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
+                        var req = new SendMessage(chatId: chat.Id, text: "One of the nodes you have submitted is invalid, or has not been accepted into the supernode program yet, or it has not recieved its first payment. The invalid node was node registered. Please check your nodes and try again");
+                        bot.MakeRequestAsync(request: req);
                         continue;
                     }
-                    validNodes.Add(node);
+                    validNodes.Add(item: node);
                 }
 
             // if the user wants to register a node
-            if (text.StartsWith("/registerNode:") && text != "/registerNode:")
+            if (text.StartsWith(value: "/registerNode:") && text != "/registerNode:")
             {
                 // automatically add the deposit account of each registered node as a monitored account
                 // nodes must be cross referenced with total supernode list to acquire the deposit address
@@ -80,16 +80,16 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 try
                 {
                     AccountUtils.AddAccount(
-                         chat.Id,
-                         nodes.Where(x => validNodes.Any(y => y.Ip == x.Ip)).ToList()
-                         .Select(node => node.PayoutAddress).ToList());
+                         chatId: chat.Id,
+                         accounts: nodes.Where(predicate: x => validNodes.Any(predicate: y => y.Ip == x.Ip)).ToList()
+                         .Select(selector: node => node.PayoutAddress).ToList());
 
-                    var nodesAdded = NodeUtils.AddNode(chat.Id, validNodes);
+                    var nodesAdded = NodeUtils.AddNode(chatId: chat.Id, nodes: validNodes);
 
 
                     // return a message showing which accounts were registered
                     msg1 = nodes.Count > 0
-                        ? nodesAdded.Aggregate("Nodes registered: \n \n", (current, n) => current + n.Ip + "\n")
+                        ? nodesAdded.Aggregate(seed: "Nodes registered: \n \n", func: (current, n) => current + n.Ip + "\n")
                         : "No nodes were added. It/they may be offline or have an invalid IP. Check your node ip's and try again";
 
                     // send message
@@ -97,17 +97,17 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine(value: e);
                     msg1 = "Something went wrong, please try again.";
                 }
 
-                var reqAction1 = new SendMessage(chat.Id, msg1);
-                Bot.MakeRequestAsync(reqAction1);
+                var reqAction1 = new SendMessage(chatId: chat.Id, text: msg1);
+                Bot.MakeRequestAsync(request: reqAction1);
 
             }
 
             // if a user wants to unregister an account
-            if (text.StartsWith("/unregisterNode:") && text != "/unregisterNode:")
+            if (text.StartsWith(value: "/unregisterNode:") && text != "/unregisterNode:")
             {
                 string msg2;
                 try
@@ -116,27 +116,27 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                     msg2 = result.Length > 1 ? "Your nodes were removed" : "Your node was removed";
 
                     // make sure the user is registered
-                    if (UserUtils.GetUser(chat.Id)?.UserName != chat.Username)
+                    if (UserUtils.GetUser(chatId: chat.Id)?.ChatId != chat.Id)
                     {
                         // if not, tell them
-                        var reqAction3 = new SendMessage(chat.Id, "You are not registered");
-                        Bot.MakeRequestAsync(reqAction3);
+                        var reqAction3 = new SendMessage(chatId: chat.Id, text: "You are not registered");
+                        Bot.MakeRequestAsync(request: reqAction3);
                         return;
                     }
 
                     // get all user nodes
-                    var userNodes = NodeUtils.GetNodeByUser(chat.Id);
+                    var userNodes = NodeUtils.GetNodeByUser(chatId: chat.Id);
 
                     // delete any nodes submitted
-                    NodeUtils.DeleteNode(chat.Id, result.ToList());
+                    NodeUtils.DeleteNode(chatId: chat.Id, nodes: result.ToList());
 
                     // delete any associated deposit accounts that would have been automatically registered
                     
-                    AccountUtils.DeleteAccount(chat.Id,
-                        userNodes.Where(y => AccountUtils.GetAccountByUser(chat.Id)
-                                    .Any(x => x.EncodedAddress == y.DepositAddress))
-                                    .Where(y => result.Any(x => x == y.IP))
-                                    .Select(acc => acc.DepositAddress).ToList());
+                    AccountUtils.DeleteAccount(chatId: chat.Id,
+                        accounts: userNodes.Where(predicate: y => AccountUtils.GetAccountByUser(chatId: chat.Id)
+                                    .Any(predicate: x => x.EncodedAddress == y.DepositAddress))
+                                    .Where(predicate: y => result.Any(predicate: x => x == y.IP))
+                                    .Select(selector: acc => acc.DepositAddress).ToList());
                 }
                 catch (Exception)
                 {
@@ -144,8 +144,8 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
                 }
                 
                 // send a message to notify user of any changes
-                var reqAction2 = new SendMessage(chat.Id, msg2);
-                Bot.MakeRequestAsync(reqAction2);
+                var reqAction2 = new SendMessage(chatId: chat.Id, text: msg2);
+                Bot.MakeRequestAsync(request: reqAction2);
             }
         }
     }

@@ -26,26 +26,29 @@ namespace SupernodeScanner2._0.Scanners
 
                 foreach (var a in accounts)
                 {                 
-                     await ScanBlocks(a);
+                     await ScanBlocks(userAccount: a);
                 }
             }
         }
 
-        private static async Task ScanBlocks(Account userAccount)
+        private static async Task ScanBlocks(
+            Account userAccount)
         {
             try
             {
-                var nemAcc = new AccountFactory().FromEncodedAddress(userAccount.EncodedAddress);
-
+               
+                var nemAcc = new AccountFactory().FromEncodedAddress(encodedAddress: userAccount.EncodedAddress);
+                
                 var blocks = await nemAcc.GetHarvestingInfoAsync();
 
                 foreach (var t in blocks.data)
                 {
                     if (blocks.data.Count <= 0 || userAccount.LastBlockHarvestedHeight >= t?.height) continue;
-
+                   
                     userAccount.LastBlockHarvestedHeight = t?.height;
 
-                    AccountUtils.UpdateAccount(userAccount);
+                    AccountUtils.UpdateAccount(
+                        usrAcc: userAccount);
 
                     var hb = new AccountHarvestedSummary()
                     {
@@ -56,29 +59,29 @@ namespace SupernodeScanner2._0.Scanners
                         OwnedByUser = userAccount.OwnedByUser
                     };
 
-                    SummaryUtils.AddHBSummary(hb);
+                    SummaryUtils.AddHBSummary(s: hb);
 
                   
                     if (!userAccount.CheckBlocks) continue;
 
-                    await Notify(userAccount, t);
+                    await Notify(usrAcc: userAccount, hrvData: t);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                await ScanBlocks(userAccount);
+                Console.WriteLine(value: e);
+                
             }
            
         }
 
-        private static async Task Notify(Account a, HarvestingData.Datum b)
+        private static async Task Notify(Account usrAcc, HarvestingData.Datum hrvData)
         {
-            var bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+            var bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
-            var reqAction = new SendMessage(a.OwnedByUser, "The account: \n" + a.EncodedAddress.GetResultsWithHyphen() + " harvested a new block. \n" + "http://explorer.ournem.com/#/s_block?height=" + b.height + "\nFees included: " + (b.totalFee / 1000000));
+            var reqAction = new SendMessage(chatId: usrAcc.OwnedByUser, text: "The account: \n" + usrAcc.EncodedAddress.GetResultsWithHyphen() + " harvested a new block. \n" + "http://explorer.ournem.com/#/s_block?height=" + hrvData.height + "\nFees included: " + (hrvData.totalFee / 1000000));
 
-            await bot.MakeRequestAsync(reqAction);
+            await bot.MakeRequestAsync(request: reqAction);
         }
     }
 }

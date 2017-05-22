@@ -36,7 +36,7 @@ namespace SupernodeScanner2._0.DataContextModel
     #endregion
 		
 		public SuperNodeDataContext() : 
-				base(global::SupernodeScanner2._0.Properties.Settings.Default.SupernodeScannerDBConnectionString1, mappingSource)
+				base(global::SupernodeScanner2._0.Properties.Settings.Default.SupernodeScannerDBConnectionString2, mappingSource)
 		{
 			OnCreated();
 		}
@@ -86,13 +86,15 @@ namespace SupernodeScanner2._0.DataContextModel
 		
 		private System.Nullable<int> _LastTest;
 		
-		private System.Nullable<long> _OwnedByUser;
+		private long _OwnedByUser;
 		
 		private string _DepositAddress;
 		
 		private int _SNodeID;
 		
 		private string _Alias;
+		
+		private System.Nullable<System.DateTime> _WentOffLine;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -104,7 +106,7 @@ namespace SupernodeScanner2._0.DataContextModel
     partial void OnIPChanged();
     partial void OnLastTestChanging(System.Nullable<int> value);
     partial void OnLastTestChanged();
-    partial void OnOwnedByUserChanging(System.Nullable<long> value);
+    partial void OnOwnedByUserChanging(long value);
     partial void OnOwnedByUserChanged();
     partial void OnDepositAddressChanging(string value);
     partial void OnDepositAddressChanged();
@@ -112,6 +114,8 @@ namespace SupernodeScanner2._0.DataContextModel
     partial void OnSNodeIDChanged();
     partial void OnAliasChanging(string value);
     partial void OnAliasChanged();
+    partial void OnWentOffLineChanging(System.Nullable<System.DateTime> value);
+    partial void OnWentOffLineChanged();
     #endregion
 		
 		public SuperNode()
@@ -179,8 +183,8 @@ namespace SupernodeScanner2._0.DataContextModel
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OwnedByUser", DbType="BigInt")]
-		public System.Nullable<long> OwnedByUser
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_OwnedByUser", DbType="BigInt NOT NULL", IsPrimaryKey=true)]
+		public long OwnedByUser
 		{
 			get
 			{
@@ -255,6 +259,26 @@ namespace SupernodeScanner2._0.DataContextModel
 					this._Alias = value;
 					this.SendPropertyChanged("Alias");
 					this.OnAliasChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_WentOffLine", DbType="DateTime")]
+		public System.Nullable<System.DateTime> WentOffLine
+		{
+			get
+			{
+				return this._WentOffLine;
+			}
+			set
+			{
+				if ((this._WentOffLine != value))
+				{
+					this.OnWentOffLineChanging(value);
+					this.SendPropertyChanging();
+					this._WentOffLine = value;
+					this.SendPropertyChanged("WentOffLine");
+					this.OnWentOffLineChanged();
 				}
 			}
 		}

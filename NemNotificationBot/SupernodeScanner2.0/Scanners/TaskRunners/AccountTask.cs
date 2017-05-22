@@ -20,65 +20,65 @@ namespace SupernodeScanner2._0.Scanners.TaskRunners
         private TelegramBot Bot { get; set; }
         internal void RegisterAccounts(Message message)
         {
-            Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+            Bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
-            if (UserUtils.GetUser(message.Chat.Id)?.UserName == null)
+            if (UserUtils.GetUser(chatId: message.Chat.Id)?.UserName == null)
             {
                 // add user based on their chat ID
-                UserUtils.AddUser(message.Chat.Username, message.Chat.Id);
+                UserUtils.AddUser(userName: message.Chat.Username, chatId: message.Chat.Id);
 
                 // declare message
                 var msg1 = "You have been automatically registered, one moment please";
 
                 // send message notifying they have been registered
-                var reqAction1 = new SendMessage(message.Chat.Id, msg1);
+                var reqAction1 = new SendMessage(chatId: message.Chat.Id, text: msg1);
 
                 // send message
-                Bot.MakeRequestAsync(reqAction1);
+                Bot.MakeRequestAsync(request: reqAction1);
             }
 
             // set up regex sequence to verify address validity
             var address = new Regex(
-                @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
+                pattern: @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
             // extract any sequence matching addresses
-            var result = address.Matches(message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(input: message.Text.GetResultsWithoutHyphen()).Cast<Match>().Select(selector: m => m.Value).ToList();
 
             // register any valid addresses for monitoring
-            AccountUtils.AddAccount(message.Chat.Id, result);
+            AccountUtils.AddAccount(chatId: message.Chat.Id, accounts: result);
 
             // notify user the account(s) was registered
-            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses registered: \n", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
-            Bot.MakeRequestAsync(reqAction);
+            var reqAction = new SendMessage(chatId: message.Chat.Id, text: result.Aggregate(seed: "Addresses registered: \n", func: (current, n) => current + n.GetResultsWithHyphen() + "\n"));
+            Bot.MakeRequestAsync(request: reqAction);
         }
 
         internal void UnregisterAccount(Message message, string text)
         {
-            Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+            Bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
 
             // set up regex sequence matcher
             var address = new Regex(
-                @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
+                pattern: @"[Nn]{1,1}[a-zA-Z0-9]{39,39}");
 
             // extract any valid addresses
-            var result = address.Matches(text.GetResultsWithoutHyphen()).Cast<Match>().Select(m => m.Value).ToList();
+            var result = address.Matches(input: text.GetResultsWithoutHyphen()).Cast<Match>().Select(selector: m => m.Value).ToList();
 
-            var userNodes = NodeUtils.GetNodeByUser(message.Chat.Id);
+            var userNodes = NodeUtils.GetNodeByUser(chatId: message.Chat.Id);
 
             foreach (var acc in result)
             {
-                SummaryUtils.DeleteHbSummaryForUser(acc, message.Chat.Id);
-                SummaryUtils.DeleteTxSummaryForUser(acc, message.Chat.Id);
+                SummaryUtils.DeleteHbSummaryForUser(account: acc, chatId: message.Chat.Id);
+                SummaryUtils.DeleteTxSummaryForUser(account: acc, chatId: message.Chat.Id);
             }
 
             // delete any valid addresses
-            AccountUtils.DeleteAccount(message.Chat.Id,
-                result.Where(x => userNodes.All(y => y.IP != x))
+            AccountUtils.DeleteAccount(chatId: message.Chat.Id,
+                accounts: result.Where(predicate: x => userNodes.All(predicate: y => y.IP != x))
                 .ToList());
 
             // notify user
-            var reqAction = new SendMessage(message.Chat.Id, result.Aggregate("Addresses unregistered: \n", (current, n) => current + n.GetResultsWithHyphen() + "\n"));
-            Bot.MakeRequestAsync(reqAction);
+            var reqAction = new SendMessage(chatId: message.Chat.Id, text: result.Aggregate(seed: "Addresses unregistered: \n", func: (current, n) => current + n.GetResultsWithHyphen() + "\n"));
+            Bot.MakeRequestAsync(request: reqAction);
         }
     }
 }

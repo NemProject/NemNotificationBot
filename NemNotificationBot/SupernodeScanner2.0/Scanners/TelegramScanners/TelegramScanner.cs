@@ -27,26 +27,26 @@ namespace SuperNodeScanner
         {
             
             // get access key from congif
-            var Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]); // insert access token
+            var Bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]); // insert access token
 
             // get "me"
-            var me = Bot.MakeRequestAsync(new GetMe()).Result;
+            var me = Bot.MakeRequestAsync(request: new GetMe()).Result;
 
             // if me is null, connection failed, maybe incorrect access token
             if (me == null)
             {
-                Console.WriteLine("GetMe() FAILED. Do you forget to add your AccessToken to App.config?");
-                Console.WriteLine("(Press ENTER to quit)");
+                Console.WriteLine(value: "GetMe() FAILED. Do you forget to add your AccessToken to App.config?");
+                Console.WriteLine(value: "(Press ENTER to quit)");
                 Console.ReadLine();
                 return;
             }
 
             // print out that connection worked
-            Console.WriteLine("{0} (@{1}) connected!", me.FirstName, me.Username);
+            Console.WriteLine(format: "{0} (@{1}) connected!", arg0: me.FirstName, arg1: me.Username);
 
             Console.WriteLine();
-            Console.WriteLine("Find @{0} in Telegram and send him a message - it will be displayed here", me.Username);
-            Console.WriteLine("(Press ENTER to stop listening and quit)");
+            Console.WriteLine(format: "Find @{0} in Telegram and send him a message - it will be displayed here", arg0: me.Username);
+            Console.WriteLine(value: "(Press ENTER to stop listening and quit)");
 
             // set message update offset
             long offset = 0;
@@ -58,11 +58,11 @@ namespace SuperNodeScanner
 
                 try
                 {
-                    updates = Bot.MakeRequestAsync(new GetUpdates() {Offset = offset}).Result;
+                    updates = Bot.MakeRequestAsync(request: new GetUpdates() {Offset = offset}).Result;
                 }
                 catch (Exception)
                 {
-                    Bot = new TelegramBot(ConfigurationManager.AppSettings["accessKey"]);
+                    Bot = new TelegramBot(accessToken: ConfigurationManager.AppSettings[name: "accessKey"]);
                     continue;
                 }
 
@@ -85,67 +85,67 @@ namespace SuperNodeScanner
                     var text = update.Message.Text;
 
                     // if empty or null, reiterate loop
-                    if (string.IsNullOrEmpty(text))
+                    if (string.IsNullOrEmpty(value: text))
                     {
                         continue;
                     }
                     
                     // if message is to register or unregister a node do the following
-                    if (text.StartsWith("/registerNode:") && text != "/registerNode:" ||
-                        text.StartsWith("/unregisterNode:") && text != "/unregisterNode:")
+                    if (text.StartsWith(value: "/registerNode:") && text != "/registerNode:" ||
+                        text.StartsWith(value: "/unregisterNode:") && text != "/unregisterNode:")
                     {
                         // send message to let the user know the bot is working
-                        var reqAction = new SendMessage(update.Message.Chat.Id, "One moment please..");
+                        var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "One moment please..");
 
-                        await Bot.MakeRequestAsync(reqAction);
+                        await Bot.MakeRequestAsync(request: reqAction);
 
-                        var t = Task.Run(() => new NodeManagement().ManageNodes(update.Message.Chat, text));
+                        var t = Task.Run(action: () => new NodeManagement().ManageNodes(chat: update.Message.Chat, text: text));
                         continue;
                     }
                     
-                    if (text == "/dailySummary" || text == "/sevenDaySummary" || text == "/thirtyOneDaySummary" || text.StartsWith("/customSummary:"))
+                    if (text == "/dailySummary" || text == "/sevenDaySummary" || text == "/thirtyOneDaySummary" || text.StartsWith(value: "/customSummary:"))
                     {
-                        var t = Task.Run(() => new SummaryCreator().GetSummary(text, update.Message.Chat));
+                        var t = Task.Run(action: () => new SummaryCreator().GetSummary(text: text, chat: update.Message.Chat));
 
                         continue;
                     }
                     
                     // if a user wants to register an account, not linked to a supernode
-                    if (text.StartsWith("/registerAccount:") && text != "/registerAccount:")
+                    if (text.StartsWith(value: "/registerAccount:") && text != "/registerAccount:")
                     {
-                        var t = Task.Run(() => new AccountTask().RegisterAccounts(update.Message));
+                        var t = Task.Run(action: () => new AccountTask().RegisterAccounts(message: update.Message));
                         continue;
                     }
 
                     // if a user wants to unregister an account
-                    if (text.StartsWith("/unregisterAccount:") && text != "/unregisterAccount:") 
+                    if (text.StartsWith(value: "/unregisterAccount:") && text != "/unregisterAccount:") 
                     {
-                        var t = Task.Run(() => new AccountTask().UnregisterAccount(update.Message, text));
+                        var t = Task.Run(action: () => new AccountTask().UnregisterAccount(message: update.Message, text: text));
                         continue;
                     }
 
-                    if (text.StartsWith("/optInTxsAcc:") && text != "/optInTxsAcc:")
+                    if (text.StartsWith(value: "/optInTxsAcc:") && text != "/optInTxsAcc:")
                     {
-                        OptIOAccountUtils.OptInTx(update.Message);
+                        OptIOAccountUtils.OptInTx(message: update.Message);
                        
                         continue;
                     }
-                    if (text.StartsWith("/optOutTxsAcc:") && text != "/optOutTxsAcc:")
+                    if (text.StartsWith(value: "/optOutTxsAcc:") && text != "/optOutTxsAcc:")
                     {
-                        OptIOAccountUtils.OptOutTx(update.Message);
+                        OptIOAccountUtils.OptOutTx(message: update.Message);
 
                         continue;
                     }
 
-                    if (text.StartsWith("/optInHarvestingAcc:") && text != "/opInHarvestingAcc:")
+                    if (text.StartsWith(value: "/optInHarvestingAcc:") && text != "/optInHarvestingAcc:")
                     {
-                        OptIOAccountUtils.OptInHarvesting(update.Message);
+                        OptIOAccountUtils.OptInHarvesting(message: update.Message);
 
                         continue;
                     }
-                    if (text.StartsWith("/optOutHarvestingAcc:") && text != "/optOutHarvestingAcc:")
+                    if (text.StartsWith(value: "/optOutHarvestingAcc:") && text != "/optOutHarvestingAcc:")
                     {
-                        OptIOAccountUtils.OptOutHarvesting(update.Message);
+                        OptIOAccountUtils.OptOutHarvesting(message: update.Message);
 
                         continue;
                     }
@@ -154,52 +154,52 @@ namespace SuperNodeScanner
                     {
                         case "/registerAccount:":
                             {
-                                var reqAction = new SendMessage(update.Message.Chat.Id, "To register an account, use the command \"/registerAccount:\" followed by a comma delimited list of accounts");
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "To register an account, use the command \"/registerAccount:\" followed by a comma delimited list of accounts");
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 continue;
                             } 
                         case "/unregisterAccount:":
                             {
-                                var reqAction = new SendMessage(update.Message.Chat.Id, "To unregister an account, use the commmand \"/unregisterAccount:\" followed by a comma delimited list of accounts");
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "To unregister an account, use the commmand \"/unregisterAccount:\" followed by a comma delimited list of accounts");
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 continue;
                             }
                         case "/registerNode:":
                             {
-                                var reqAction = new SendMessage(update.Message.Chat.Id, "To register a node, use the command \"/registerNode:\" followed by a comma delimited list of IP addresses. Addresses consisting of characters are also supported. eg. bob.nem.ninja");
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "To register a node, use the command \"/registerNode:\" followed by a comma delimited list of IP addresses. Addresses consisting of characters are also supported. eg. bob.nem.ninja");
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 continue;
                             }
                         case "/unregisterNode:":
                             {
-                                var reqAction = new SendMessage(update.Message.Chat.Id, "To unregister a node, use the commmand \"/unregisterNode:\" followed by a comma delimited list of IP addresses");
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "To unregister a node, use the commmand \"/unregisterNode:\" followed by a comma delimited list of IP addresses");
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 continue;
                             }
                         case "/deleteAccount":
                             {
-                                UserUtils.DeleteUser(update.Message.From.Username, update.Message.Chat.Id);
+                                UserUtils.DeleteUser(userName: update.Message.From.Username, chatId: update.Message.Chat.Id);
 
-                                var reqAction = new SendMessage(update.Message.Chat.Id, "You Account has been removed");
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "You Account has been removed");
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 continue;
                             }
                         case "/start":
                             {
-                                UserUtils.AddUser(update.Message.From.Username, update.Message.Chat.Id);
+                                UserUtils.AddUser(userName: update.Message.From.Username, chatId: update.Message.Chat.Id);
 
-                                var reqAction = new SendMessage(update.Message.Chat.Id,
-                                    "Hello. \n\n" +
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id,
+                                    text: "Hello. \n\n" +
                                     "Please start by registering a supernode or NEM acccount. \n" +
                                     "When you register a supernode, the deposit account of the supernode is" +
                                     " automatically registered under your username and you will start to " +
@@ -214,37 +214,37 @@ namespace SuperNodeScanner
                                     )
                                 { ReplyMarkup = KeyBoards.MainMenu };
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 continue;
                             }
                         
                         case "/myDetails":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id, "One moment please..");
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, text: "One moment please..");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
-                                var t = Task.Run(() => new MyDetailsTask().ReturnMyDetails(update.Message));
+                                var t = Task.Run(action: () => new MyDetailsTask().ReturnMyDetails(message: update.Message));
 
                                 continue;
                             }
                         case "/summary":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id, 
-                                    "Use the commands below to generate a summary for your accounts. " +
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, 
+                                    text: "Use the commands below to generate a summary for your accounts. " +
                                     "Include a number after custom summary to get a summary of any given" +
                                     " days up to the current day")
                                 { ReplyMarkup = KeyBoards.SummaryMenu };
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/help":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id,
-                                    "Hello.\n\n" +
+                                var req = new SendMessage(chatId: update.Message.Chat.Id,
+                                    text: "Hello.\n\n" +
                                     "Check out the commands below to see what you can do, or check out the blog at <link> for more information \n\n" +
                                     "When you register a supernode, the deposit account of the supernode is" +
                                     " automatically registered under your username and you will start to " +
@@ -258,96 +258,91 @@ namespace SuperNodeScanner
                                     "Use the \"/myDetails\" command to see the nodes and accounts you have registered, what notifications they are signed up for and some additional information")
                                 { ReplyMarkup = KeyBoards.MainMenu };
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/back":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id, "Main menu") { ReplyMarkup = KeyBoards.MainMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, text: "Main menu") { ReplyMarkup = KeyBoards.MainMenu };
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optIO":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id,
-                                    "Use any of the commands below to opt in or out of any particular notification types. " +
+                                var req = new SendMessage(chatId: update.Message.Chat.Id,
+                                    text: "Use any of the commands below to opt in or out of any particular notification types. " +
                                     "You can either opt in or out of notification types globally for all accounts registered to you" +
                                     " or selectively per account.")
                                 { ReplyMarkup = KeyBoards.OptMenu };
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optInTxsAcc:":
                         {
-                                var req = new SendMessage(update.Message.Chat.Id, 
-                                    "To opt into transaction notifications for a given account or accounts, use the \"/optInTxsAcc:\" command, " +
-                                    "followed by a list of comma delimeted addresses ")
-                                { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, 
+                                    text: "To opt into transaction notifications for a given account or accounts, use the \"/optInTxsAcc:\" command, " +
+                                    "followed by a list of comma delimeted addresses ");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                         }
                         case "/optOutTxsAcc:":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id,
-                                    "To opt out of transaction notifications for a given account or accounts, " +
-                                    "use the \"/optOutTxsAcc:\" command, followed by a list of comma delimeted addresses ")
-                                { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id,
+                                    text: "To opt out of transaction notifications for a given account or accounts, " +
+                                    "use the \"/optOutTxsAcc:\" command, followed by a list of comma delimeted addresses ");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optInHarvestingAcc:":
                             {                                
-                                var req = new SendMessage(update.Message.Chat.Id, 
-                                    "To opt into harvesting notifications for a given account or accounts, " +
-                                    "use the \"/optInHarvestingAcc:\" command, followed by a list of comma delimeted addresses ")
-                                { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, 
+                                    text: "To opt into harvesting notifications for a given account or accounts, " +
+                                    "use the \"/optInHarvestingAcc:\" command, followed by a list of comma delimeted addresses ");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optOutHarvestingAcc:":
                             {
-                                var req = new SendMessage(update.Message.Chat.Id, 
-                                    "To opt out of harvesting notifications for a given account or accounts, " +
-                                    "use the \"/optOutHarvestingAcc:\" command, followed by a list of comma delimeted addresses ")
-                                { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, 
+                                    text: "To opt out of harvesting notifications for a given account or accounts, " +
+                                    "use the \"/optOutHarvestingAcc:\" command, followed by a list of comma delimeted addresses ");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optInTxsGlobal":
                             {
-                                var accs = AccountUtils.GetAccountByUser(update.Message.Chat.Id);
+                                var accs = AccountUtils.GetAccountByUser(chatId: update.Message.Chat.Id);
 
                                 foreach (var acc in accs)
                                 {
                                     acc.CheckTxs = true;
                                 }
 
-                                AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);
+                                AccountUtils.UpdateAccount(accs: accs, user: update.Message.Chat.Id);
 
-                                var req = new SendMessage(update.Message.Chat.Id, 
-                                    "You have opted into transaction notifications")
-                                { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, 
+                                    text: "You have opted into transaction notifications");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optOutTxsGlobal":
                             {
-                                    var accs = AccountUtils.GetAccountByUser(update.Message.Chat.Id);
+                                    var accs = AccountUtils.GetAccountByUser(chatId: update.Message.Chat.Id);
 
                                     foreach (var acc in accs)
                                     {
@@ -355,20 +350,19 @@ namespace SuperNodeScanner
 
                                     }
 
-                                    AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);
+                                    AccountUtils.UpdateAccount(accs: accs, user: update.Message.Chat.Id);
 
-                                    var req = new SendMessage(update.Message.Chat.Id,
-                                        "You have opted out of transaction notifications")
-                                    { ReplyMarkup = KeyBoards.OptMenu };
+                                    var req = new SendMessage(chatId: update.Message.Chat.Id,
+                                        text: "You have opted out of transaction notifications");
 
-                                    Bot.MakeRequestAsync(req);
+                                    Bot.MakeRequestAsync(request: req);
 
                                     continue;
                                                              
                             }
                         case "/optInHarvestingGlobal":
                             {
-                                var accs = AccountUtils.GetAccountByUser(update.Message.Chat.Id);
+                                var accs = AccountUtils.GetAccountByUser(chatId: update.Message.Chat.Id);
 
                                 foreach (var acc in accs)
                                 {
@@ -376,17 +370,17 @@ namespace SuperNodeScanner
 
                                 }
 
-                                AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);      
+                                AccountUtils.UpdateAccount(accs: accs, user: update.Message.Chat.Id);      
 
-                                var req = new SendMessage(update.Message.Chat.Id, "You have opted into harvesting notifications") { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, text: "You have opted into harvesting notifications");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
                         case "/optOutHarvestingGlobal":
                             {
-                                var accs = AccountUtils.GetAccountByUser(update.Message.Chat.Id);
+                                var accs = AccountUtils.GetAccountByUser(chatId: update.Message.Chat.Id);
 
                                 foreach (var acc in accs)
                                 {
@@ -394,19 +388,19 @@ namespace SuperNodeScanner
 
                                 }
 
-                                AccountUtils.UpdateAccount(accs, update.Message.Chat.Id);
+                                AccountUtils.UpdateAccount(accs: accs, user: update.Message.Chat.Id);
 
-                                var req = new SendMessage(update.Message.Chat.Id, "You have opted out of harvesting notifications") { ReplyMarkup = KeyBoards.OptMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, text: "You have opted out of harvesting notifications");
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }        
                         case "/harvestingSpace":
                             {
-                                var reqAction = new SendMessage(update.Message.Chat.Id, "One moment please..");
+                                var reqAction = new SendMessage(chatId: update.Message.Chat.Id, text: "One moment please..");
 
-                                Bot.MakeRequestAsync(reqAction);
+                                Bot.MakeRequestAsync(request: reqAction);
 
                                 var freeNodes = new List<string>();
 
@@ -416,25 +410,25 @@ namespace SuperNodeScanner
 
                                 var r = new Random();
 
-                                for (var index = r.Next(0, 320); index < 400; index++)
+                                for (var index = r.Next(minValue: 0, maxValue: 320); index < 400; index++)
                                 {
 
-                                    var node = nodes[index];
+                                    var node = nodes[index: index];
 
-                                    nodeClient.Connection.SetHost(node.Ip);
+                                    nodeClient.Connection.SetHost(host: node.Ip);
 
                                     var result = await nodeClient.UnlockedInfo();
 
-                                    if (result.NumUnlocked < result.MaxUnlocked) freeNodes.Add(node.Ip);
+                                    if (result.NumUnlocked < result.MaxUnlocked) freeNodes.Add(item: node.Ip);
                                     
                                     if (freeNodes.Count == 3) break;
                                 }
 
-                                var message = string.Join("\n", freeNodes);
+                                var message = string.Join(separator: "\n", values: freeNodes);
 
-                                var req = new SendMessage(update.Message.Chat.Id, message);
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, text: message);
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                             }
@@ -442,9 +436,9 @@ namespace SuperNodeScanner
                         {
                                 
 
-                                var req = new SendMessage(update.Message.Chat.Id, "Main menu") { ReplyMarkup = KeyBoards.MainMenu };
+                                var req = new SendMessage(chatId: update.Message.Chat.Id, text: "Main menu") { ReplyMarkup = KeyBoards.MainMenu };
 
-                                Bot.MakeRequestAsync(req);
+                                Bot.MakeRequestAsync(request: req);
 
                                 continue;
                         }

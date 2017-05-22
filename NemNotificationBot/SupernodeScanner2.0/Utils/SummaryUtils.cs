@@ -13,7 +13,7 @@ namespace SupernodeScanner2._0.Utils
         { 
             var context = new AccountTxSummaryDataContext();
                 
-            context.AccountTxSummaries.InsertOnSubmit(s);
+            context.AccountTxSummaries.InsertOnSubmit(entity: s);
 
             context.SubmitChanges();
         }
@@ -23,13 +23,13 @@ namespace SupernodeScanner2._0.Utils
 
             var context = new AccountTxSummaryDataContext();
 
-            DateTime startDate = DateTime.Today.AddDays(-days);
+            DateTime startDate = DateTime.Today.AddDays(value: -days);
             
               
             return context.AccountTxSummaries
-                .Where(e => e.MonitoredAccount == account)
-                .Where(e => e.OwnedByUser == chatId)
-                .Where(e => e.DateOfInput > startDate.Date)
+                .Where(predicate: e => e.MonitoredAccount == account)
+                .Where(predicate: e => e.OwnedByUser == chatId)
+                .Where(predicate: e => e.DateOfInput > startDate.Date)
                 .ToList();
         }
 
@@ -37,12 +37,12 @@ namespace SupernodeScanner2._0.Utils
         {
             var context = new AccountTxSummaryDataContext();
 
-            var summaries = GetTxSummary(account, 1000, chatId);
+            var summaries = GetTxSummary(account: account, days: 1000, chatId: chatId);
 
             foreach (var sum in summaries)
             {
-                context.AccountTxSummaries.Attach(sum);
-                context.AccountTxSummaries.DeleteOnSubmit(sum);
+                context.AccountTxSummaries.Attach(entity: sum);
+                context.AccountTxSummaries.DeleteOnSubmit(entity: sum);
             }
 
             context.SubmitChanges();
@@ -52,12 +52,12 @@ namespace SupernodeScanner2._0.Utils
         {
             var context = new AccountHarvestedSummaryDataContext();
 
-            var summaries = GetHBSummary(account, 1000, chatId);
+            var summaries = GetHBSummary(account: account, days: 1000, chatId: chatId);
 
             foreach (var sum in summaries)
             {
-                context.AccountHarvestedSummaries.Attach(sum);
-                context.AccountHarvestedSummaries.DeleteOnSubmit(sum);
+                context.AccountHarvestedSummaries.Attach(entity: sum);
+                context.AccountHarvestedSummaries.DeleteOnSubmit(entity: sum);
             }
 
             context.SubmitChanges();
@@ -68,13 +68,13 @@ namespace SupernodeScanner2._0.Utils
 
             var context = new AccountHarvestedSummaryDataContext();
 
-            DateTime startDate = DateTime.Today.AddDays(-days);
+            DateTime startDate = DateTime.Today.AddDays(value: -days);
 
 
             return context.AccountHarvestedSummaries
-                .Where(e => e.MonitoredAccount == account)
-                .Where(e => e.OwnedByUser == chatId)
-                .Where(e => e.DateOfInput > startDate.Date)
+                .Where(predicate: e => e.MonitoredAccount == account)
+                .Where(predicate: e => e.OwnedByUser == chatId)
+                .Where(predicate: e => e.DateOfInput > startDate.Date)
                 .ToList();
         }
 
@@ -83,7 +83,7 @@ namespace SupernodeScanner2._0.Utils
         {
             var context = new AccountHarvestedSummaryDataContext();
 
-            context.AccountHarvestedSummaries.InsertOnSubmit(s);
+            context.AccountHarvestedSummaries.InsertOnSubmit(entity: s);
 
             context.SubmitChanges();
         }

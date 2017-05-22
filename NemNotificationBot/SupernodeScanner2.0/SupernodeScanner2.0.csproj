@@ -49,26 +49,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Base32Encoder, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\Base32Encoder.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\CSharp2nem.1.0.40\lib\net452\Base32Encoder.dll</HintPath>
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
-      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\BouncyCastle.Crypto.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\CSharp2nem.1.0.40\lib\net452\BouncyCastle.Crypto.dll</HintPath>
     </Reference>
     <Reference Include="Chaos.NaCl, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\Chaos.NaCl.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\CSharp2nem.1.0.40\lib\net452\Chaos.NaCl.dll</HintPath>
     </Reference>
     <Reference Include="CSharp2nem, Version=1.0.30.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\CSharp2nem.1.0.36\lib\net452\CSharp2nem.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\packages\CSharp2nem.1.0.40\lib\net452\CSharp2nem.dll</HintPath>
     </Reference>
     <Reference Include="NetTelegramBotApi, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NetTelegramBotApi.4.1.0\lib\net45\NetTelegramBotApi.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Newtonsoft.Json">
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -131,31 +127,48 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="DataContextModel\Account.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>Account.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </None>
+    <None Include="DataContextModel\Account.dbml.layout">
+      <DependentUpon>Account.dbml</DependentUpon>
     </None>
     <None Include="DataContextModel\AccountHarvestedSummary.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>AccountHarvestedSummary.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
+    <None Include="DataContextModel\AccountHarvestedSummary.dbml.layout">
+      <DependentUpon>AccountHarvestedSummary.dbml</DependentUpon>
+    </None>
     <None Include="DataContextModel\AccountTxSummary.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>AccountTxSummary.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </None>
+    <None Include="DataContextModel\AccountTxSummary.dbml.layout">
+      <DependentUpon>AccountTxSummary.dbml</DependentUpon>
     </None>
     <None Include="DataContextModel\SuperNode.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>SuperNode.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
+    <None Include="DataContextModel\SuperNode.dbml.layout">
+      <DependentUpon>SuperNode.dbml</DependentUpon>
+    </None>
     <None Include="DataContextModel\User.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>User.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
+    </None>
+    <None Include="DataContextModel\User.dbml.layout">
+      <DependentUpon>User.dbml</DependentUpon>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -177,31 +190,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DataContextModel\SuperNode.dbml.layout">
-      <DependentUpon>SuperNode.dbml</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DataContextModel\AccountTxSummary.dbml.layout">
-      <DependentUpon>AccountTxSummary.dbml</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DataContextModel\AccountHarvestedSummary.dbml.layout">
-      <DependentUpon>AccountHarvestedSummary.dbml</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DataContextModel\Account.dbml.layout">
-      <DependentUpon>Account.dbml</DependentUpon>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="DataContextModel\User.dbml.layout">
-      <DependentUpon>User.dbml</DependentUpon>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

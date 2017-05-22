@@ -36,7 +36,7 @@ namespace SupernodeScanner2._0.DataContextModel
     #endregion
 		
 		public AccountTxSummaryDataContext() : 
-				base(global::SupernodeScanner2._0.Properties.Settings.Default.SupernodeScannerDBConnectionString1, mappingSource)
+				base(global::SupernodeScanner2._0.Properties.Settings.Default.SupernodeScannerDBConnectionString2, mappingSource)
 		{
 			OnCreated();
 		}
@@ -86,7 +86,7 @@ namespace SupernodeScanner2._0.DataContextModel
 		
 		private long _OwnedByUser;
 		
-		private System.DateTime _DateOfInput;
+		private System.Nullable<System.DateTime> _DateOfInput;
 		
 		private string _Sender;
 		
@@ -95,6 +95,8 @@ namespace SupernodeScanner2._0.DataContextModel
 		private long _AmountIn;
 		
 		private long _AmountOut;
+		
+		private long _BalanceAfterTx;
 		
     #region Extensibility Method Definitions
     partial void OnLoaded();
@@ -106,7 +108,7 @@ namespace SupernodeScanner2._0.DataContextModel
     partial void OnMonitoredAccountChanged();
     partial void OnOwnedByUserChanging(long value);
     partial void OnOwnedByUserChanged();
-    partial void OnDateOfInputChanging(System.DateTime value);
+    partial void OnDateOfInputChanging(System.Nullable<System.DateTime> value);
     partial void OnDateOfInputChanged();
     partial void OnSenderChanging(string value);
     partial void OnSenderChanged();
@@ -116,6 +118,8 @@ namespace SupernodeScanner2._0.DataContextModel
     partial void OnAmountInChanged();
     partial void OnAmountOutChanging(long value);
     partial void OnAmountOutChanged();
+    partial void OnBalanceAfterTxChanging(long value);
+    partial void OnBalanceAfterTxChanged();
     #endregion
 		
 		public AccountTxSummary()
@@ -183,8 +187,8 @@ namespace SupernodeScanner2._0.DataContextModel
 			}
 		}
 		
-		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DateOfInput", DbType="DateTime NOT NULL")]
-		public System.DateTime DateOfInput
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_DateOfInput", DbType="DateTime")]
+		public System.Nullable<System.DateTime> DateOfInput
 		{
 			get
 			{
@@ -279,6 +283,26 @@ namespace SupernodeScanner2._0.DataContextModel
 					this._AmountOut = value;
 					this.SendPropertyChanged("AmountOut");
 					this.OnAmountOutChanged();
+				}
+			}
+		}
+		
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage="_BalanceAfterTx", DbType="BigInt NOT NULL")]
+		public long BalanceAfterTx
+		{
+			get
+			{
+				return this._BalanceAfterTx;
+			}
+			set
+			{
+				if ((this._BalanceAfterTx != value))
+				{
+					this.OnBalanceAfterTxChanging(value);
+					this.SendPropertyChanging();
+					this._BalanceAfterTx = value;
+					this.SendPropertyChanged("BalanceAfterTx");
+					this.OnBalanceAfterTxChanged();
 				}
 			}
 		}

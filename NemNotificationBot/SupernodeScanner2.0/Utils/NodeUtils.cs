@@ -23,7 +23,7 @@ namespace SupernodeScanner2._0.Utils
             foreach (var node in nodes)
             {    
 
-                var n = GetNode(node.Ip, chatId);
+                var n = GetNode(ip: node.Ip, user: chatId);
 
                 if (n?.IP != null && n?.OwnedByUser == chatId)
                 {
@@ -37,12 +37,12 @@ namespace SupernodeScanner2._0.Utils
                     IP = node.Ip,
                     LastTest = 0,
                     DepositAddress = node.PayoutAddress,
-                    SNodeID = int.Parse(node.Id),
-                    Alias = node.Alias
+                    SNodeID = int.Parse(s: node.Id),
+                    Alias = node.Alias                 
                 };
-
-                context.SuperNodes.InsertOnSubmit(snode);
-                list.Add(node);
+                
+                context.SuperNodes.InsertOnSubmit(entity: snode);
+                list.Add(item: node);
             }
             
             context.SubmitChanges();
@@ -55,12 +55,12 @@ namespace SupernodeScanner2._0.Utils
 
             foreach (var ip in nodes)
             {
-                var n = GetNode(ip, chatId);
+                var n = GetNode(ip: ip, user: chatId);
 
                 if (n?.OwnedByUser != chatId) continue;
 
-                context.SuperNodes.Attach(n);
-                context.SuperNodes.DeleteOnSubmit(n);    
+                context.SuperNodes.Attach(entity: n);
+                context.SuperNodes.DeleteOnSubmit(entity: n);    
             }
 
             context.SubmitChanges();
@@ -68,15 +68,16 @@ namespace SupernodeScanner2._0.Utils
 
         internal static void UpdateNode(SuperNode snode, long chatId)
         {
-            if (GetNode(snode.IP, chatId)?.IP == null) return;
+            if (GetNode(ip: snode.IP, user: chatId)?.IP == null) return;
 
             var context = new SuperNodeDataContext();
 
             var node = context.SuperNodes
-                .Where(e => e.OwnedByUser == snode.OwnedByUser)
-                .Single(e => e.IP == snode.IP);
+                .Where(predicate: e => e.OwnedByUser == snode.OwnedByUser)
+                .Single(predicate: e => e.IP == snode.IP);
 
             node.LastTest = snode.LastTest;
+            node.WentOffLine = snode.WentOffLine;
 
             context.SubmitChanges();
         }
@@ -92,7 +93,7 @@ namespace SupernodeScanner2._0.Utils
             var context = new SuperNodeDataContext();
             try
             {
-                var acc = context.SuperNodes.Where(e => e.OwnedByUser == user).Single(e => e.IP == ip);
+                var acc = context.SuperNodes.Where(predicate: e => e.OwnedByUser == user).Single(predicate: e => e.IP == ip);
                 return acc;
             }
             catch (Exception)
@@ -104,11 +105,11 @@ namespace SupernodeScanner2._0.Utils
 
         internal static List<SuperNode> GetNodeByUser(long chatId)
         {
-            if (UserUtils.GetUser(chatId)?.UserName == null) return null;
+            if (UserUtils.GetUser(chatId: chatId)?.ChatId == null) return null;
 
             var context = new SuperNodeDataContext();
 
-            return context.SuperNodes.Where(node => node.OwnedByUser == chatId).ToList();  
+            return context.SuperNodes.Where(predicate: node => node.OwnedByUser == chatId).ToList();  
         }
     }
 }

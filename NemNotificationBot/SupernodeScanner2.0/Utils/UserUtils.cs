@@ -12,34 +12,49 @@ namespace SupernodeScanner2._0.DBControllers
     {
         internal static void AddUser(string userName, long chatId)
         {
-            if (GetUser(chatId)?.UserName != null) return;
-
-            var user = new User()
+            try
             {
-                ChatId = chatId,
-                UserName = userName,    
-            };
+                if (GetUser(chatId: chatId)?.ChatId == chatId) return;
 
-            var context = new UserDataContext();
+                var user = new User()
+                {
+                    ChatId = chatId,
+                    UserName = userName,
+                };
 
-            context.Users.InsertOnSubmit(user);
+                var context = new UserDataContext();
 
-            context.SubmitChanges();
+                context.Users.InsertOnSubmit(entity: user);
+
+                context.SubmitChanges();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            
         }
 
         internal static void DeleteUser(string userName, long chatId)
         {
-            if (GetUser(chatId)?.UserName == null) return;
+            try
+            {
+                if (GetUser(chatId: chatId)?.ChatId == null) return;
 
-            AccountUtils.DeleteAccount(chatId, AccountUtils.GetAccountByUser(chatId).Select(e => e.EncodedAddress).ToList());
+                AccountUtils.DeleteAccount(chatId: chatId, accounts: AccountUtils.GetAccountByUser(chatId: chatId).Select(selector: e => e.EncodedAddress).ToList());
 
-            var context = new UserDataContext();
+                var context = new UserDataContext();
 
-            var user = context.Users.Single(e => e.ChatId == chatId);
+                var user = context.Users.Single(predicate: e => e.ChatId == chatId);
 
-            context.Users.DeleteOnSubmit(user);
+                context.Users.DeleteOnSubmit(entity: user);
 
-            context.SubmitChanges();
+                context.SubmitChanges();
+            }   
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+            }
            
         }
        
@@ -48,7 +63,7 @@ namespace SupernodeScanner2._0.DBControllers
             var context = new UserDataContext();
             try
             {
-                var acc = context.Users.Single(e => e.ChatId == chatId);
+                var acc = context.Users.Single(predicate: e => e.ChatId == chatId);
                 return acc;
             }
             catch (Exception)

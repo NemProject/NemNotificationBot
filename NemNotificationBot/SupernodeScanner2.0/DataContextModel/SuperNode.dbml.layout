@@ -2,10 +2,10 @@
 <ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="SuperNode">
   <DataContextMoniker Name="/SuperNodeDataContext" />
   <nestedChildShapes>
-    <classShape Id="c286b49a-bce0-478b-91c7-afbfe4c33c33" absoluteBounds="2.375, 2.25, 2, 2.1554996744791666">
+    <classShape Id="a0e91dcd-8f5e-40ce-bf79-1d11d7eb5229" absoluteBounds="4, 2.5, 2, 2.3478011067708335">
       <DataClassMoniker Name="/SuperNodeDataContext/SuperNode" />
       <nestedChildShapes>
-        <elementListCompartment Id="9d8b6f03-eee0-4581-a2dc-b9842a6da743" absoluteBounds="2.39, 2.71, 1.9700000000000002, 1.5954996744791665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+        <elementListCompartment Id="f1eeb4e0-65db-4fb5-975a-3dc0a34beb9d" absoluteBounds="4.015, 2.96, 1.9700000000000002, 1.7878011067708335" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
   </nestedChildShapes>
