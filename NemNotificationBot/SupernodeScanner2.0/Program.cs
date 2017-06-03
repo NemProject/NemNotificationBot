@@ -28,8 +28,8 @@ namespace SuperNodeScanner
            TransactionScanner = new TransactionScanner();
            Ts = Task.Run(action: () => TransactionScanner.ScanAccounts());
 
-            BlockScanner = new HarvestedBlockScanner();
-            Bs = Task.Run(action: () => BlockScanner.ScanBlocks());
+           BlockScanner = new HarvestedBlockScanner();
+           Bs = Task.Run(action: () => BlockScanner.ScanBlocks());
 
             Console.ReadKey();
         }
