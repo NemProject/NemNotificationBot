@@ -29,6 +29,7 @@ namespace SupernodeScanner2._0.Scanners
         {
             Con = new Connection();
             Con.SetMainnet();
+            
         }
         internal void ScanAccounts()
         {
@@ -39,7 +40,8 @@ namespace SupernodeScanner2._0.Scanners
              
                 foreach (var a in accounts)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
+                   
                     ScanTransactions(userAccount: a);     
                 }
             }
@@ -53,18 +55,19 @@ namespace SupernodeScanner2._0.Scanners
                
                 tClient.BeginGetAllTransactions(ar =>
                 {
+                   
                     try
                     {
-                        var txs = ar.Content.data.Where(e => e.transaction?.otherTrans?.type == 257).ToList();
-                        txs.AddRange(ar.Content.data.Where(e => e.transaction.type == 257));
+                        var txs = ar.Content.data.Where(e => e.transaction?.otherTrans?.type == 257 || e.transaction?.type == 257).ToList();
+                       
 
                         foreach (var t in txs)
                         {
+                           
                             if (userAccount.LastTransactionHash == txs?[0]?.meta.innerHash?.data || userAccount.LastTransactionHash == txs?[0]?.meta?.hash?.data)
                             {
                                 userAccount.LastTransactionHash = txs?[0].transaction.type == 4100 ? txs?[0]?.meta.innerHash?.data : txs?[0]?.meta?.hash?.data;
-                                AccountUtils.UpdateAccount(usrAcc: userAccount);
-
+                                                         
                                 break;
                             }
 
@@ -73,14 +76,14 @@ namespace SupernodeScanner2._0.Scanners
                             {
                                 userAccount.LastTransactionHash = txs?[0].transaction.type == 4100 ? txs?[0]?.meta.innerHash?.data : txs?[0]?.meta?.hash?.data;
                                 AccountUtils.UpdateAccount(usrAcc: userAccount);
-                               
+                                
                                 break;
                             }
 
                             if (!userAccount.CheckTxs) continue;
 
                             try
-                            {
+                            {                               
                                 var summary = new AccountTxSummary
                                 {
                                     AmountIn = t.transaction.recipient == userAccount.EncodedAddress ? t.transaction.amount : 0,
