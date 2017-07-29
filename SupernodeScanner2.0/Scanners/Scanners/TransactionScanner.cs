@@ -47,13 +47,13 @@ namespace SupernodeScanner2._0.Scanners
             }
         }
 
-        private static void ScanTransactions(Account userAccount)
+        private static async void ScanTransactions(Account userAccount)
         {
             try
             {
                 var tClient = new TransactionDataClient(Con);
                
-                tClient.BeginGetAllTransactions(ar =>
+                var request = tClient.BeginGetAllTransactions(ar =>
                 {
                    
                     try
@@ -131,7 +131,9 @@ namespace SupernodeScanner2._0.Scanners
                     
                 }, userAccount.EncodedAddress);
 
-                
+                request.AsyncWaitHandle.WaitOne();
+
+
             }
             catch (Exception e)
             {   

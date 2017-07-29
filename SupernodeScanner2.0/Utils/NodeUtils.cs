@@ -80,7 +80,7 @@ namespace SupernodeScanner2._0.Utils
 
                 if (n?.OwnedByUser != chatId) continue;
                
-                context.SuperNodes.Attach(entity: n);
+                
                 context.SuperNodes.DeleteOnSubmit(entity: n);
                
             }

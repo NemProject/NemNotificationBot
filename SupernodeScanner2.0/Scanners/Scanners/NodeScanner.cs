@@ -10,8 +10,6 @@ using CSharp2nem;
 using CSharp2nem.Connectivity;
 using CSharp2nem.Model.DataModels;
 using CSharp2nem.RequestClients;
-using CSharp2nem.ResponseObjects;
-using CSharp2nem.Utils;
 using NetTelegramBotApi;
 using NetTelegramBotApi.Requests;
 using SupernodeScanner2._0;
@@ -46,13 +44,12 @@ namespace SuperNodeScanner
                         var con = new Connection();
 
                         con.SetHost(n.IP);
-
+                       
                         con.AutoHost = false;
 
                         var client = new NodeClient(con);
-
+                        
                         var info = client.EndGetExtendedNodeInfo(client.BeginGetExtendedNodeInfo());
-                       
 
                         if (n.WentOffLine != null)
                         {
@@ -70,8 +67,7 @@ namespace SuperNodeScanner
                             NodeUtils.UpdateNode(snode: n, chatId: n.OwnedByUser);
                         }
                         if (info.Node.endpoint.Host == n.IP)
-                        {
-                          
+                        {  
                             ScanTests(n: n);
                         }   
                     }
