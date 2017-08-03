@@ -18,35 +18,47 @@ namespace SupernodeScanner2._0.Utils
     {
         internal static SupernodeResponseData.Supernodes AddNode(long chatId, SupernodeResponseData.Supernodes nodes)
         {
-            var list = new SupernodeResponseData.Supernodes();
+            var list = new SupernodeResponseData.Supernodes()
+            {
+                data = new List<SupernodeResponseData.Nodes>()
+            };
+           
+
             var context = new SuperNodeDataContext();
 
-            foreach (var node in nodes.data)
-            {    
-
-                var n = GetNode(ip: node.ip, user: chatId);
-
-                if (n?.IP != null && n?.OwnedByUser == chatId)
+            try
+            {
+                foreach (var node in nodes.data)
                 {
-                    
-                    continue;
-                };
-                
-                var snode = new SuperNode()
-                {
-                    OwnedByUser = chatId,
-                    IP = node.ip,
-                    LastTest = 0,
-                    DepositAddress = node.payoutAddress,
-                    SNodeID = node.id,
-                    Alias = node.alias                 
-                };
-                
-                context.SuperNodes.InsertOnSubmit(entity: snode);
-                list.data.Add(item: node);
+
+                    var n = GetNode(ip: node.ip, user: chatId);
+
+                    if (n?.IP != null && n?.OwnedByUser == chatId)
+                    {
+
+                        continue;
+                    };
+
+                    var snode = new SuperNode()
+                    {
+                        OwnedByUser = chatId,
+                        IP = node.ip,
+                        LastTest = 0,
+                        DepositAddress = node.payoutAddress,
+                        SNodeID = node.id,
+                        Alias = node.alias
+                    };
+
+                    context.SuperNodes.InsertOnSubmit(entity: snode);
+                    list.data.Add(item: node);
+                }
+
+                context.SubmitChanges();
             }
-            
-            context.SubmitChanges();
+            catch (Exception e)
+            {
+                Console.WriteLine("add node " +  e.StackTrace);
+            }
 
             return list;
         }
@@ -55,53 +67,78 @@ namespace SupernodeScanner2._0.Utils
         {
             var context = new SuperNodeDataContext();
 
-            foreach (var ip in nodes)
+            try
             {
-                var n = GetNode(ip: ip, user: chatId);
+                foreach (var ip in nodes)
+                {
+                    var n = GetNode(ip: ip, user: chatId);
 
-                if (n?.OwnedByUser != chatId) continue;
+                    if (n?.OwnedByUser != chatId) continue;
 
-                context.SuperNodes.Attach(entity: n);
-                context.SuperNodes.DeleteOnSubmit(entity: n);    
+                    context.SuperNodes.Attach(entity: n);
+                    context.SuperNodes.DeleteOnSubmit(entity: n);
+                }
+
+                context.SubmitChanges();
             }
-
-            context.SubmitChanges();
+            catch (Exception ex)
+            {
+                Console.WriteLine("delete node " + ex.Message);
+            }
+            
         }
 
         internal static void DeleteUserNodes(long chatId)
         {
+
             var context = new SuperNodeDataContext();
 
-            var nodes = context.SuperNodes.Where(r => r.OwnedByUser == chatId).ToList();
-
-            foreach (var node in nodes)
+            try
             {
-                var n = GetNode(ip: node.IP, user: chatId);
+                var nodes = context.SuperNodes.Where(r => r.OwnedByUser == chatId).ToList();
 
-                if (n?.OwnedByUser != chatId) continue;
-               
-                
-                context.SuperNodes.DeleteOnSubmit(entity: n);
-               
+                foreach (var node in nodes)
+                {
+                    var n = GetNode(ip: node.IP, user: chatId);
+
+                    if (n?.OwnedByUser != chatId) continue;
+
+                    context.SuperNodes.Attach(n);
+                    context.SuperNodes.DeleteOnSubmit(entity: n);
+
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("delete user node " + ex.Message);
+            }
+            
 
             context.SubmitChanges();
         }
 
         internal static void UpdateNode(SuperNode snode, long chatId)
         {
-            if (GetNode(ip: snode.IP, user: chatId)?.IP == null) return;
+            try
+            {
+                if (GetNode(ip: snode.IP, user: chatId)?.IP == null) return;
 
-            var context = new SuperNodeDataContext();
+                var context = new SuperNodeDataContext();
 
-            var node = context.SuperNodes
-                .Where(predicate: e => e.OwnedByUser == snode.OwnedByUser)
-                .Single(predicate: e => e.IP == snode.IP);
-           
-            node.LastTest = snode.LastTest;
-            node.WentOffLine = snode.WentOffLine;
+                var node = context.SuperNodes
+                    .Where(predicate: e => e.OwnedByUser == snode.OwnedByUser)
+                    .Single(predicate: e => e.IP == snode.IP);
 
-            context.SubmitChanges();
+                node.LastTest = snode.LastTest;
+                node.WentOffLine = snode.WentOffLine;
+
+                context.SubmitChanges();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("update node " + ex.Message);    
+            }
+            
         }
         internal static List<SuperNode> GetAllNodes()
         {

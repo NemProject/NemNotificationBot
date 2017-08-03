@@ -186,7 +186,7 @@ namespace SuperNodeScanner
 
                                     Console.WriteLine(msg);
 
-                                    Nofity(node: n, msg: msg);
+                                     Nofity(node: n, msg: msg);
                                 }
                                 catch (Exception e)
                                 {
